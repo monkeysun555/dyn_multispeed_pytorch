@@ -1,5 +1,5 @@
 import numpy as np
-import config as Config
+from config import Env_Config
 
 SEG_DURATION = 1000.0
 CHUNK_DURATION = 200.0
@@ -17,10 +17,10 @@ EST_HIGH_NOISE = 1.02
 
 class Live_Server(object):
     def __init__(self):
-        self.seg_duration = Config.seg_duration
-        self.chunk_duration = Config.chunk_duration
-        self.chunk_in_seg = Config.chunk_in_seg
-        self.time = np.random.randint(Config.server_init_lat_low, Config.server_init_lat_low)*Config.seg_duration + np.random.randint(1,self.seg_duration)
+        self.seg_duration = Env_Config.seg_duration
+        self.chunk_duration = Env_Config.chunk_duration
+        self.chunk_in_seg = Env_Config.chunk_in_seg
+        self.time = np.random.randint(Env_Config.server_init_lat_low, Env_Config.server_init_lat_high)*Env_Config.seg_duration + np.random.randint(1,self.seg_duration)
         self.current_seg_idx = -1   # For initial
         self.current_chunk_idx = 0
         self.chunks = []    # 1 for initial chunk, 0 for following chunks
@@ -118,8 +118,7 @@ class Live_Server(object):
         return time_interval        # in ms
 
     def reset(self):
-
-        self.time = np.random.randint(Config.server_init_lat_low, Config.server_init_lat_low)*Config.seg_duration + np.random.randint(1,self.seg_duration)   
+        self.time = np.random.randint(Env_Config.server_init_lat_low, Env_Config.server_init_lat_high)*Env_Config.seg_duration + np.random.randint(1,self.seg_duration)   
         self.server_init_lat = server_init_lat
         self.current_seg_idx = -1
         self.current_chunk_idx = 0
@@ -150,7 +149,7 @@ class Live_Server(object):
         else: return False
 
     def skip(self):
-        skip_segs = Config.skip_segs
+        skip_segs = Env_Config.skip_segs
         assert self.chunks[0][1] == 0
         #Change server state to target time after skip
         if self.get_encoding_buffer_length() >= skip_segs * self.seg_duration + self.chunk_duration: 

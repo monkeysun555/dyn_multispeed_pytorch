@@ -7,7 +7,7 @@ import glob
 import os
 import math
 from config import Config
-from model import Model
+from models import Model
 
 class Agent:
     def __init__(self, action_dims):

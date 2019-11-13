@@ -1,5 +1,5 @@
 import numpy as np
-import config as Config
+from config import Env_Config
 from utils import load_bandwidth, load_single_trace
 
 RANDOM_SEED = 13
@@ -27,13 +27,13 @@ class Live_Player(object):
         self.time_idx = np.random.randint(1,len(self.time_trace))
         self.last_trace_time = self.time_trace[self.time_idx-1] * MS_IN_S   # in ms
 
-        self.seg_duration = Config.seg_duration
-        self.chunk_duration = Config.chunk_duration
+        self.seg_duration = Env_Config.seg_duration
+        self.chunk_duration = Env_Config.chunk_duration
 
         self.buffer = 0.0   # ms
         self.state = 0  # 0: start up.  1: traceing. 2: rebuffering
-        self.start_up_ssh = Config.start_up_ssh
-        self.freezing_tol = Config.freezing_tol
+        self.start_up_ssh = Env_Config.start_up_ssh
+        self.freezing_tol = Env_Config.freezing_tol
         print('player initial finish')
 
     def fetch(self, quality, next_chunk_set, seg_idx, chunk_idx, take_action, num_chunk, playing_speed):
@@ -232,7 +232,7 @@ class Live_Player(object):
         assert np.round(self.playing_time, 1)%self.seg_duration == 0.0
 
     def skip_with_time(self, jump_time, encoder_head_time):
-        num_skip = Config.skip_segs
+        num_skip = Env_Config.skip_segs
         if np.round(self.buffer, 1) >= jump_time:
             assert self.state == 1 or self.state == 0
             self.buffer -= np.round(jump_time, 1)
@@ -244,7 +244,7 @@ class Live_Player(object):
         return
 
     def repeat(self):
-        num_repeat = Config.repeat_segs
+        num_repeat = Env_Config.repeat_segs
         if self.playing_time <= num_repeat*self.seg_duration:
             return
         self.playing_time -= num_repeat*self.seg_duration

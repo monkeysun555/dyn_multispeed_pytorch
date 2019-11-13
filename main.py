@@ -14,9 +14,9 @@ from utils import *
 # Variable = lambda *args, **kwargs: autograd.Variable(*args, **kwargs).cuda() if USE_CUDA else autograd.Variable(*args, **kwargs)
 
 def main():
-	# Load env
-	env = Env.Live_Streaming()
-    action_dims = env.get_action_info()
+    # Load env
+    env = Env.Live_Streaming()
+    _, action_dims = env.get_action_info()
     reply_buffer = Reply_Buffer(Config.reply_buffer_size)
     agent = Agent(action_dims)
 
@@ -24,8 +24,8 @@ def main():
     loss_logs = []
 
     # restore model
-    if restore:
-        agent.restore(restore)
+    # if restore:
+    #    agent.restore(restore)
 
     for episode in range(1, Config.total_episode+1):
         # reset env
@@ -34,7 +34,7 @@ def main():
         state = env.get_state()
         # state = np.stack([[obs for _ in range(4)]], axis=0)
         total_reward = 0.0
-         
+
         while not env.streaming_finish():
             action_1, action_2 = agent.take_action(state)
             reward = env.act(action_1, action_2)
@@ -47,30 +47,30 @@ def main():
             action_2_onehot[action_2] = 1
             reply_buffer.append((state, [action_1_onehot, action_2_onehot], reward, state_new, env.streaming_finish()))
             state = state_new
-         
+
         # update target network
         if episode % Config.update_target_frequency == 0:
             agent.update_target_network()
-        
-        # sample batch from reply buffer 
+
+        # sample batch from reply buffer
         batch_state, batch_actions, batch_reward, batch_state_new, batch_over = reply_buffer.sample(Config.batch_size)
-        
+
         # update policy network
         loss = agent.update_Q_network(batch_state, batch_actions, batch_reward, batch_state_new, batch_over)
-    
-        loss_logs.extend([[episode, loss]]) 
-        reward_logs.extend([[episode, total_reward]]) 
+
+        loss_logs.extend([[episode, loss]])
+        reward_logs.extend([[episode, total_reward]])
 
         # save model
         if episode % Config.save_logs_frequency == 0:
             agent.save(episode, Config.logs_path)
             np.save(os.path.join(Config.logs_path, 'loss.npy'), np.array(loss_logs))
             np.save(os.path.join(Config.logs_path, 'reward.npy'), np.array(reward_logs))
-    
+
         # print reward and loss
         if episode % Config.show_loss_frequency == 0: 
             print('Episode: {} Reward: {:.3f} Loss: {:.3f}' .format(episode, total_reward, loss))
-    
+
         agent.update_epsilon()
 
 if __name__ == "__main__":
