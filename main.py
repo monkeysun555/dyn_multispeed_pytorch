@@ -35,9 +35,13 @@ def main():
         # state = np.stack([[obs for _ in range(4)]], axis=0)
         total_reward = 0.0
 
+        # Update epsilon
+        agent.update_epsilon_by_epoch(episode)
         while not env.streaming_finish():
             action_1, action_2 = agent.take_action(state)
+            # print(action_1, action_2)
             reward = env.act(action_1, action_2)
+            # print(reward)
             state_new = env.get_state()
             total_reward += reward
             action_onehots = []
@@ -53,7 +57,7 @@ def main():
             agent.update_target_network()
 
         # sample batch from reply buffer
-        batch_state, batch_actions, batch_reward, batch_state_new, batch_over = reply_buffer.sample(Config.batch_size)
+        batch_state, batch_actions, batch_reward, batch_state_new, batch_over = reply_buffer.sample()
 
         # update policy network
         loss = agent.update_Q_network(batch_state, batch_actions, batch_reward, batch_state_new, batch_over)

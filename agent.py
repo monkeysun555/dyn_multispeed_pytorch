@@ -74,16 +74,15 @@ class Agent:
         state = Variable(state).cuda()
         
         self.Q_network.eval()
-        estimate = self.Q_network.forward(state).max(dim=1)
-        
+        estimate = [torch.max(q_value, 1)[1].data[0] for q_value in self.Q_network.forward(state)] 
         # with epsilon prob to choose random action else choose argmax Q estimate action
         if random.random() < self.epsilon:
-            return random.randint(0, self.action_number-1)
+            return [random.randint(0, self.action_dims[action_idx]-1) for action_idx in range(len(self.action_dims))]
         else:
-            return estimate[1].data[0]
+            return estimate
 
-    def epsilon_by_frame(self, frame_idx):
-        return self.epsilon_final + (self.epsilon_start - self.epsilon_final) * math.exp(-1. * frame_idx / self.epsilon_decay)       
+    def update_epsilon_by_epoch(self, epoch):
+        self.epsilon = self.epsilon_final + (self.epsilon_start - self.epsilon_final) * math.exp(-1. * epoch / self.epsilon_decay)       
     
     def save(self, step, logs_path):
         os.makedirs(logs_path, exist_ok=True)

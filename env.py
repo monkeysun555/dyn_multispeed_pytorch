@@ -155,6 +155,7 @@ class Live_Streaming(object):
             action_reward += quality_r - rebuff_p - smooth_p - delay_p - unnormal_speed_p - speed_smooth_p - missing_p - repeat_p
 
             # Update state
+            # print(state)
             state = np.roll(state, -1, axis=1)
             state[0, -1] = real_chunk_size                                  # chunk delivered, in Kbits                    
             state[1, -1] = download_duration - rtt                          # download duration, in ms
@@ -189,6 +190,7 @@ class Live_Streaming(object):
         state[7, -1] = state[7, -1]/2.0
         state[8, -1] = state[8, -1]/2.0
         state[9, -1] = state[9, -1]/self.speeds[-2]
+        return state
 
     def get_action_info(self):
         return Env_Config.a_num, Env_Config.a_dims
@@ -208,7 +210,7 @@ class Live_Streaming(object):
 
     def translate_to_speed(self, action_2_index):
         # Translate to real speed
-        if action_2_index == 0 or output2 == len(self.speeds) - 1:
+        if action_2_index == 0 or action_2_index == len(self.speeds) - 1:
             return 1.0
         return self.speeds[action_2_index]
 
@@ -217,7 +219,7 @@ class Live_Streaming(object):
         return Env_Config.action_reward * log_bit_rate * chunk_number
 
     # 2nd reward, freezing
-    def get_freeze_penalty(freezing):
+    def get_freeze_penalty(self, freezing):
         return Env_Config.rebuf_penalty * freezing
 
     # 3rd reward, bitrate fluctuation

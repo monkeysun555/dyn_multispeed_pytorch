@@ -1,4 +1,5 @@
 from collections import deque
+from config import Config
 import random
 import numpy as np
 
@@ -13,7 +14,7 @@ class Reply_Buffer:
             self.buffer.popleft()
         self.buffer.append(item)
 
-    def sample(self, batch_size):
+    def sample(self, batch_size=Config.batch_size):
         batch = random.sample(self.buffer, batch_size)
         batch_state, batch_action, batch_reward, batch_state_new, batch_over = [], [], [], [], []
         

@@ -6,14 +6,14 @@ class Model(nn.Module):
     def __init__(self, action_dims):
         super().__init__()
         if Config.model_version == 0:
-            self.lstm1 = nn.LSTM(input_size=5, hidden_size=256, num_layers=2, dropout=0.1, batch_first=True, bidirectional=True)
+            self.lstm1 = nn.LSTM(input_size=5, hidden_size=32, num_layers=2, dropout=0.1, batch_first=True, bidirectional=True)
 
             self.fc1 = nn.Sequential(
-                nn.Linear(in_features=5, out_features=256),
+                nn.Linear(in_features=5, out_features=32),
                 nn.ReLU())
 
             self.fc2 = nn.Sequential(
-                nn.Linear(in_features=512, out_features=128),
+                nn.Linear(in_features=992, out_features=128),
                 nn.ReLU())
 
             print(action_dims)
@@ -25,16 +25,19 @@ class Model(nn.Module):
         
     def forward(self, observation):
         # Shape of observation: (batch, 15, 10) (batch, seq, input_size)
+        h0 = torch.randn(2*2, 1, 32).cuda()
+        c0 = torch.randn(2*2, 1, 32).cuda()
         if Config.model_version == 0:
-            lstm1_out = self.lstm1(torch.transpose(observation[:,0:5,:],1,2))         # output shape(batch, seq, input_size) as batch_first is used, (batch, 15, 5)
-            fc1_out = self.fc1(torch.squeeze(observation[:,5:, -1]))             # output shape(batch, hidden_size) as batch_first is used, (batch, 256)   
-            fc2_out = self.fc_2(torch.cat((lstm1_out.view(-1, 15*5), fc1_out), 1))      #fc2_out shape: (batch, 128)
+            lstm1_out, (hn, cn) = self.lstm1(torch.transpose(observation[0:5,:],0,1).unsqueeze(0), (h0,c0))         # input: (5, 15) to (1,15,5) , output: (1,15, 2*32)
+            fc1_out = self.fc1(observation[5:,-1].unsqueeze(0))                            # input: (1,5) output: (1, 32)
+            # print(fc1_out.size())         
+            fc2_out = self.fc2(torch.cat((torch.flatten(lstm1_out, start_dim=1), fc1_out), 1))                      # flatten: (1,15,2*32) to (1,-1) and cat with (1,32)
             advantages=[]
-            for count, linear in self.multi_output:
-                branch_out = linear(fc2_out)                            # Advantage of each branch shape (batch, 6/7)
+            for linear in self.multi_output:
+                branch_out = linear(fc2_out)                           
                 advantages.append(branch_out)
-        return advantages                                           # set of y_d 
-    
+        return advantages
+
     def save(self, path, step, optimizer):
         torch.save({
             'step': step,

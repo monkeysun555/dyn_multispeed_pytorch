@@ -13,7 +13,7 @@ class Config(object):
     save_logs_frequency = 5000
     lr = 1e-4
     batch_size = 300
-
+    sampling_batch_size = 300
     update_target_frequency = 5
     show_loss_frequency = 10
     maximum_model = 5

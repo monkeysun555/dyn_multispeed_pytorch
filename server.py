@@ -119,7 +119,7 @@ class Live_Server(object):
 
     def reset(self):
         self.time = np.random.randint(Env_Config.server_init_lat_low, Env_Config.server_init_lat_high)*Env_Config.seg_duration + np.random.randint(1,self.seg_duration)   
-        self.server_init_lat = server_init_lat
+        # self.server_init_lat = server_init_lat
         self.current_seg_idx = -1
         self.current_chunk_idx = 0
         self.chunks = []    # 1 for initial chunk, 0 for following chunks
