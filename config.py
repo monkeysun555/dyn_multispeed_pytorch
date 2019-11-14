@@ -4,18 +4,19 @@ class Config(object):
     epsilon_start = 1.0
     epsilon_final = 0.0001
     epsilon_decay = 5000.0
-
     logs_path = './logs/'
     initial_observe_episode = 1000
-    reply_buffer_size = 50000
-    total_episode = 100000
+    reply_buffer_size = 5000
+    total_episode = 50000
     discount_factor = 0.99
     save_logs_frequency = 5000
     lr = 1e-4
-    batch_size = 300
+    momentum = 0.9
+    # batch_size = 300
+    observe_episode = 2
     sampling_batch_size = 300
     update_target_frequency = 5
-    show_loss_frequency = 10
+    show_loss_frequency = 1000
     maximum_model = 5
     screen_width = 84
     screen_height = 84

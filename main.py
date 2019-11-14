@@ -28,9 +28,10 @@ def main():
     #    agent.restore(restore)
 
     for episode in range(1, Config.total_episode+1):
+        print("episode:", episode)
         # reset env
         env.reset()
-        env.act(0, 3)	# Default
+        env.act(0, 3)   # Default
         state = env.get_state()
         # state = np.stack([[obs for _ in range(4)]], axis=0)
         total_reward = 0.0
@@ -38,7 +39,7 @@ def main():
         # Update epsilon
         agent.update_epsilon_by_epoch(episode)
         while not env.streaming_finish():
-            action_1, action_2 = agent.take_action(state)
+            action_1, action_2 = agent.take_action(np.array([state]))
             # print(action_1, action_2)
             reward = env.act(action_1, action_2)
             # print(reward)
@@ -49,7 +50,8 @@ def main():
             action_2_onehot = np.zeros(action_dims[1])
             action_1_onehot[action_1] = 1
             action_2_onehot[action_2] = 1
-            reply_buffer.append((state, [action_1_onehot, action_2_onehot], reward, state_new, env.streaming_finish()))
+            # print(env.streaming_finish())
+            reply_buffer.append((state, action_1_onehot, action_2_onehot, reward, state_new, env.streaming_finish()))
             state = state_new
 
         # update target network
@@ -57,10 +59,13 @@ def main():
             agent.update_target_network()
 
         # sample batch from reply buffer
-        batch_state, batch_actions, batch_reward, batch_state_new, batch_over = reply_buffer.sample()
+        if episode < Config.observe_episode:
+            continue
+
+        batch_state, batch_actions_1, batch_actions_2, batch_reward, batch_state_new, batch_over = reply_buffer.sample()
 
         # update policy network
-        loss = agent.update_Q_network(batch_state, batch_actions, batch_reward, batch_state_new, batch_over)
+        loss = agent.update_Q_network(batch_state, batch_actions_1, batch_actions_2, batch_reward, batch_state_new, batch_over)
 
         loss_logs.extend([[episode, loss]])
         reward_logs.extend([[episode, total_reward]])
@@ -73,9 +78,9 @@ def main():
 
         # print reward and loss
         if episode % Config.show_loss_frequency == 0: 
-            print('Episode: {} Reward: {:.3f} Loss: {:.3f}' .format(episode, total_reward, loss))
+            print('Episode: {} Reward: {:.3f} Loss: {:.3f} and {:.3f}' .format(episode, total_reward, loss[0], loss[1]))
 
-        agent.update_epsilon()
+        agent.update_epsilon_by_epoch(episode)
 
 if __name__ == "__main__":
     main()

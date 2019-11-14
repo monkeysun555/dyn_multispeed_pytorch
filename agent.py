@@ -23,16 +23,28 @@ class Agent:
         self.Q_network = Model(self.action_dims).cuda()
         self.target_network = Model(self.action_dims).cuda()
         # Change learning rate for commen net !!!! Start from here
-        self.optimizer = optim.Adam(self.Q_network.parameters(), lr=Config.lr)          # To be modified
+        if Config.model_version == 0:
+            self.optimizers = [optim.Adam([
+                {'params': self.Q_network.multi_output_1.parameters(), 'lr':Config.lr},
+                {'params': self.Q_network.fc2.parameters()},
+                {'params': self.Q_network.fc1.parameters()},
+                {'params': self.Q_network.lstm1.parameters()},
+                ], lr=0.5*Config.lr), 
+                optim.Adam([
+                {'params': self.Q_network.multi_output_2.parameters(), 'lr':Config.lr},
+                {'params': self.Q_network.fc2.parameters()},
+                {'params': self.Q_network.fc1.parameters()},
+                {'params': self.Q_network.lstm1.parameters()},
+                ], lr=0.5*Config.lr)]
     
     def update_target_network(self):
         # copy current_network to target network
         self.target_network.load_state_dict(self.Q_network.state_dict())
     
-    def update_Q_network(self, state, actions, reward, state_new, terminal):
+    def update_Q_network(self, state, action_1, action_2, reward, state_new, terminal):
         state = torch.from_numpy(state).float()
-        action_1 = torch.from_numpy(actions[:, 0]).float()
-        action_2 = torch.from_numpy(actions[:, 1]).float()
+        action_1 = torch.from_numpy(action_1).float()
+        action_2 = torch.from_numpy(action_2).float()
         state_new = torch.from_numpy(state_new).float()
         terminal = torch.from_numpy(terminal).float()
         reward = torch.from_numpy(reward).float()
@@ -46,28 +58,27 @@ class Agent:
         self.target_network.eval()
         
         # use current network to evaluate action argmax_a' Q_current(s', a')_
-        actions_new = self.Q_network.forward(state_new).max(dim=2)[1].cpu().data.view(-1, 1)        # To be modified
-        action1_new_onehot = torch.zeros(Config.batch_size, 1, self.action_number)
-
-        action_new_onehot = Variable(action_new_onehot.scatter_(1, action_new, 1.0)).cuda()
+        # actions_new = self.Q_network.forward(state_new).max(dim=2)[1].cpu().data.view(-1, 1)        # To be modified
+        # actions_new = self.Q_network.forward(state_new).max(dim=2)[1].cpu().data.view(-1, 1)        # To be modified
+        actions_new = [torch.max(q_value, 1)[1].cpu().data.view(-1, 1) for q_value in self.Q_network.forward(state_new)] 
+        actions_new_onehot = [torch.zeros(Config.sampling_batch_size, action_dim) for action_dim in self.action_dims]
+        actions_new_onehot = [Variable(actions_new_onehot[action_idx].scatter_(1, actions_new[action_idx], 1.0)).cuda() for action_idx in range(len(self.action_dims))]
         
         # Different loss and object
         # use target network to evaluate value y = r + discount_factor * Q_tar(s', a')
+        losses = []
         if Config.model_version == 0:
-            y = self.target_network.forward(state_new)
-            y = (reward + torch.mul(((self.target_network.forward(state_new)*action_new_onehot).sum(dim=1)*terminal), Config.discount_factor))
-        
-        # regression Q(s, a) -> y
-        self.Q_network.train()
-        Q = (self.Q_network.forward(state)*action).sum(dim=1)
-        loss = mse_loss(input=Q, target=y.detach())
-        
-        # backward optimize
-        self.optimizer.zero_grad()
-        loss.backward()
-        self.optimizer.step()
-        
-        return loss.data[0]
+            actions = [action_1, action_2]
+            for action_idx in range(len(self.action_dims)):
+                y = reward + torch.mul(((self.target_network.forward(state_new)[action_idx]*actions_new_onehot[action_idx]).sum(dim=1)*terminal), Config.discount_factor)
+                self.Q_network.train()
+                Q = (self.Q_network.forward(state)[action_idx]*actions[action_idx]).sum(dim=1)
+                loss = mse_loss(input=Q, target=y.detach())
+                self.optimizers[action_idx].zero_grad()
+                loss.backward()
+                self.optimizers[action_idx].step()
+                losses.append(loss.item())
+        return losses
 
     def take_action(self, state):
         state = torch.from_numpy(state).float()
