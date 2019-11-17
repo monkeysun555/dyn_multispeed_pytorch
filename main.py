@@ -28,7 +28,6 @@ def main():
     #    agent.restore(restore)
 
     for episode in range(1, Config.total_episode+1):
-        print("episode:", episode)
         # reset env
         env.reset()
         env.act(0, 3)   # Default
@@ -54,13 +53,13 @@ def main():
             reply_buffer.append((state, action_1_onehot, action_2_onehot, reward, state_new, env.streaming_finish()))
             state = state_new
 
-        # update target network
-        if episode % Config.update_target_frequency == 0:
-            agent.update_target_network()
-
         # sample batch from reply buffer
         if episode < Config.observe_episode:
             continue
+
+        # update target network
+        if episode % Config.update_target_frequency == 0:
+            agent.update_target_network()
 
         batch_state, batch_actions_1, batch_actions_2, batch_reward, batch_state_new, batch_over = reply_buffer.sample()
 
@@ -72,6 +71,7 @@ def main():
 
         # save model
         if episode % Config.save_logs_frequency == 0:
+            print("episode:", episode)
             agent.save(episode, Config.logs_path)
             np.save(os.path.join(Config.logs_path, 'loss.npy'), np.array(loss_logs))
             np.save(os.path.join(Config.logs_path, 'reward.npy'), np.array(reward_logs))

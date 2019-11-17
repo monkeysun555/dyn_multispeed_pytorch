@@ -15,7 +15,7 @@ class Config(object):
     # batch_size = 300
     observe_episode = 2
     sampling_batch_size = 300
-    update_target_frequency = 5
+    update_target_frequency = 50
     show_loss_frequency = 1000
     maximum_model = 5
     screen_width = 84

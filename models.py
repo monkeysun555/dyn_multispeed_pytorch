@@ -34,16 +34,18 @@ class Model(nn.Module):
             advantages=[self.multi_output_1(fc2_out), self.multi_output_2(fc2_out)]
         return advantages
 
-    def save(self, path, step, optimizer):
+    def save(self, path, step, optimizers):
         torch.save({
             'step': step,
             'state_dict': self.state_dict(),
-            'optimizer': optimizer.state_dict()
+            'optimizer_1': optimizers[0].state_dict(),
+            'optimizer_2': optimizers[1].state_dict(),
         }, path)
             
     def load(self, checkpoint_path, optimizer=None):
         checkpoint = torch.load(checkpoint_path)
         step = checkpoint['step']
         self.load_state_dict(checkpoint['state_dict'])
-        if optimizer is not None:
-            optimizer.load_state_dict(checkpoint['optimizer'])
+        if optimizers is not None:
+            optimizers[0].load_state_dict(checkpoint['optimizer1'])
+            optimizers[1].load_state_dict(checkpoint['optimizer2'])

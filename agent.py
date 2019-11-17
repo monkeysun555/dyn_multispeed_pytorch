@@ -102,10 +102,23 @@ class Agent:
             min_step = min([int(li.split('/')[-1][6:-4]) for li in model_list]) 
             os.remove(os.path.join(logs_path, 'model-{}.pth' .format(min_step)))
         logs_path = os.path.join(logs_path, 'model-{}.pth' .format(step))
-        self.Q_network.save(logs_path, step=step, optimizer=self.optimizer)
+        self.Q_network.save(logs_path, step=step, optimizers=self.optimizers)
         print('=> Save {}' .format(logs_path)) 
     
     def restore(self, logs_path):
-        self.Q_network.load(logs_path)
-        self.target_network.load(logs_path)
+        self.Q_network.load(logs_path, self.optimizers)
+        self.target_network.load(logs_path, self.optimizers)
         print('=> Restore {}' .format(logs_path)) 
+        if Config.model_version == 0:
+            self.optimizers = [optim.Adam([
+                {'params': self.Q_network.multi_output_1.parameters(), 'lr':Config.lr},
+                {'params': self.Q_network.fc2.parameters()},
+                {'params': self.Q_network.fc1.parameters()},
+                {'params': self.Q_network.lstm1.parameters()},
+                ], lr=0.5*Config.lr), 
+                optim.Adam([
+                {'params': self.Q_network.multi_output_2.parameters(), 'lr':Config.lr},
+                {'params': self.Q_network.fc2.parameters()},
+                {'params': self.Q_network.fc1.parameters()},
+                {'params': self.Q_network.lstm1.parameters()},
+                ], lr=0.5*Config.lr)]
