@@ -53,8 +53,8 @@ def main():
                 state = state_new
             elif Config.model_version == 1:                
                 action = agent.take_action(np.array([state]))
-                action_1 = int(action/action_dims[0])
-                action_2 = action%action_dims[0]
+                action_1 = int(action/action_dims[1])
+                action_2 = action%action_dims[1]
                 reward = env.act(action_1, action_2)
                 # print(reward)
                 state_new = env.get_state()

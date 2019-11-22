@@ -10,7 +10,7 @@ class Config(object):
     total_episode = 50000
     discount_factor = 0.99
     save_logs_frequency = 5000
-    lr = 1e-4
+    lr = 1e-3
     momentum = 0.9
     # batch_size = 300
     observe_episode = 2

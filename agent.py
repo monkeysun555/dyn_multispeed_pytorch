@@ -85,9 +85,13 @@ class Agent:
             # Q = (self.Q_network.forward(state)[action_idx]*actions[action_idx]).sum(dim=1)
             loss = mse_loss(input=Q[action_idx], target=y[action_idx].detach())
             self.optimizers[action_idx].zero_grad()
-            loss.backward()
+            if action_idx < len(self.action_dims)-1:
+                loss.backward(retain_graph=True)
+            else:
+                loss.backward()
             self.optimizers[action_idx].step()
             losses.append(loss.item())
+        print(losses)
         return losses
 
     def update_Q_network_v2(self, state, action, reward, state_new, terminal):
