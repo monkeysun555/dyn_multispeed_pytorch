@@ -119,7 +119,7 @@ class Agent:
         # use target network to evaluate value y = r + discount_factor * Q_tar(s', a')
         y = reward + torch.mul(((self.target_network.forward(state_new)*actions_new_onehot).sum(dim=1)*terminal),Config.discount_factor)
         self.Q_network.train()
-        Q = (self.Q_network.forward(state)*actions).sum(dim=1)
+        Q = (self.Q_network.forward(state)*action).sum(dim=1)
         losses = []
         # y = reward + torch.mul(((self.target_network.forward(state_new)[action_idx]*actions_new_onehot[action_idx]).sum(dim=1)*terminal), Config.discount_factor)
         # Q = (self.Q_network.forward(state)[action_idx]*actions[action_idx]).sum(dim=1)
