@@ -22,7 +22,16 @@ class Model(nn.Module):
             # self.dueling = nn.Sequential(
             #     nn.Linear(in_features=512, out_channels=1),
             #     nn.ReLU())
-        
+        elif Config.model_version == 1:
+            self.lstm1 = nn.LSTM(input_size=5, hidden_size=32, num_layers=2, dropout=0.1, batch_first=True, bidirectional=True)
+            self.fc1 = nn.Sequential(
+                nn.Linear(in_features=5, out_features=32),
+                nn.ReLU())
+            self.fc2 = nn.Sequential(
+                nn.Linear(in_features=992, out_features=128),
+                nn.ReLU())
+            self.output = nn.Linear(in_features=128, out_features=action_dims[0]*action_dims[1])
+
     def forward(self, observation):
         # Shape of observation: (batch, 15, 10) (batch, seq, input_size)
         h0 = torch.randn(2*2, len(observation), 32).cuda()

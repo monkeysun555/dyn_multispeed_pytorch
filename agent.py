@@ -36,6 +36,8 @@ class Agent:
                 {'params': self.Q_network.fc1.parameters()},
                 {'params': self.Q_network.lstm1.parameters()},
                 ], lr=0.5*Config.lr)]
+        elif Config.model_version == 1:
+            pass
     
     def update_target_network(self):
         # copy current_network to target network
@@ -66,7 +68,7 @@ class Agent:
         
         # Different loss and object
         # use target network to evaluate value y = r + discount_factor * Q_tar(s', a')
-        y = [reward + torch.mul(((new_q*actions_new_onehot[action_idx]).sum(dim=1)*terminal),Config.discount_factor) for new_q in self.target_network.forward(state_new)]
+        y = [reward + torch.mul(((self.target_network.forward(state_new)[new_q_idx]*actions_new_onehot[new_q_idx]).sum(dim=1)*terminal),Config.discount_factor) for new_q_idx in range(len(self.target_network.forward(state_new)))]
         self.Q_network.train()
         Q = [(q*actions[action_idx]).sum(dim=1) for q in self.Q_network.forward(state)]
         losses = []
@@ -85,15 +87,20 @@ class Agent:
     def take_action(self, state):
         state = torch.from_numpy(state).float()
         state = Variable(state).cuda()
-        
         self.Q_network.eval()
-        estimate = [torch.max(q_value, 1)[1].data[0] for q_value in self.Q_network.forward(state)] 
-        # with epsilon prob to choose random action else choose argmax Q estimate action
-        if random.random() < self.epsilon:
-            return [random.randint(0, self.action_dims[action_idx]-1) for action_idx in range(len(self.action_dims))]
-        else:
-            return estimate
-
+        if Config.model_version == 0:
+            estimate = [torch.max(q_value, 1)[1].data[0] for q_value in self.Q_network.forward(state)] 
+            # with epsilon prob to choose random action else choose argmax Q estimate action
+            if random.random() < self.epsilon:
+                return [random.randint(0, self.action_dims[action_idx]-1) for action_idx in range(len(self.action_dims))]
+            else:
+                return estimate
+        elif Config.model_version == 1:
+            estimate = torch.max(self.Q_network.forward(state), 1)[1].data[0]
+            if random.random() < self.epsilon:
+                return [random.randint(0, self.action_dims[action_idx]-1) for action_idx in range(len(self.action_dims))]
+            else:
+                return estimate
     def update_epsilon_by_epoch(self, epoch):
         self.epsilon = self.epsilon_final + (self.epsilon_start - self.epsilon_final) * math.exp(-1. * epoch / self.epsilon_decay)       
     

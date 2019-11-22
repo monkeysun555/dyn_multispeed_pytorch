@@ -19,10 +19,8 @@ def main():
     _, action_dims = env.get_action_info()
     reply_buffer = Reply_Buffer(Config.reply_buffer_size)
     agent = Agent(action_dims)
-
     reward_logs = []
     loss_logs = []
-
     # restore model
     # if restore:
     #    agent.restore(restore)
@@ -38,7 +36,12 @@ def main():
         # Update epsilon
         agent.update_epsilon_by_epoch(episode)
         while not env.streaming_finish():
-            action_1, action_2 = agent.take_action(np.array([state]))
+            if model_version == 0:
+                action_1, action_2 = agent.take_action(np.array([state]))
+            elif model_version == 1:
+                action = agent.take_action(np.array([state]))
+                action_1 = 
+                action_2 = 
             # print(action_1, action_2)
             reward = env.act(action_1, action_2)
             # print(reward)
