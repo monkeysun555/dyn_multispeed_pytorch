@@ -39,9 +39,9 @@ def main():
             if model_version == 0:
                 action_1, action_2 = agent.take_action(np.array([state]))
             elif model_version == 1:
-                action = agent.take_action(np.array([state]))
-                action_1 = 
-                action_2 = 
+                # action = agent.take_action(np.array([state]))
+                # action_1 = 
+                # action_2 = 
             # print(action_1, action_2)
             reward = env.act(action_1, action_2)
             # print(reward)
