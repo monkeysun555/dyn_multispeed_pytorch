@@ -36,9 +36,9 @@ def main():
         # Update epsilon
         agent.update_epsilon_by_epoch(episode)
         while not env.streaming_finish():
-            if model_version == 0:
+            if Config.model_version == 0:
                 action_1, action_2 = agent.take_action(np.array([state]))
-            elif model_version == 1:
+            elif Config.model_version == 1:
                 pass
                 # action = agent.take_action(np.array([state]))
                 # action_1 = 
