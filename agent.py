@@ -66,14 +66,16 @@ class Agent:
         
         # Different loss and object
         # use target network to evaluate value y = r + discount_factor * Q_tar(s', a')
+        y = [reward + torch.mul(((new_q*actions_new_onehot[action_idx]).sum(dim=1)*terminal),Config.discount_factor) for new_q in self.target_network.forward(state_new)]
+        self.Q_network.train()
+        Q = [(q*actions[action_idx]).sum(dim=1) for q in self.Q_network.forward(state)]
         losses = []
         if Config.model_version == 0:
             actions = [action_1, action_2]
             for action_idx in range(len(self.action_dims)):
-                y = reward + torch.mul(((self.target_network.forward(state_new)[action_idx]*actions_new_onehot[action_idx]).sum(dim=1)*terminal), Config.discount_factor)
-                self.Q_network.train()
-                Q = (self.Q_network.forward(state)[action_idx]*actions[action_idx]).sum(dim=1)
-                loss = mse_loss(input=Q, target=y.detach())
+                # y = reward + torch.mul(((self.target_network.forward(state_new)[action_idx]*actions_new_onehot[action_idx]).sum(dim=1)*terminal), Config.discount_factor)
+                # Q = (self.Q_network.forward(state)[action_idx]*actions[action_idx]).sum(dim=1)
+                loss = mse_loss(input=Q[action_idx], target=y[action_idx].detach())
                 self.optimizers[action_idx].zero_grad()
                 loss.backward()
                 self.optimizers[action_idx].step()
