@@ -315,3 +315,4 @@ class Live_Player(object):
 
     def get_buffer(self):
         return self.buffer
+
