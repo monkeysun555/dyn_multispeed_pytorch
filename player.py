@@ -233,7 +233,7 @@ class Live_Player(object):
 
     def skip_with_time(self, jump_time, encoder_head_time):
         num_skip = Env_Config.skip_segs
-        if np.round(self.buffer, 1) >= jump_time:
+        if np.round(self.buffer) >= jump_time:
             assert self.state == 1 or self.state == 0
             self.buffer -= np.round(jump_time, 1)
             self.playing_time += np.round(jump_time, 1) + num_skip * self.seg_duration

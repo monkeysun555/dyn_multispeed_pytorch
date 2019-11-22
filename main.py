@@ -97,7 +97,7 @@ def main():
             if Config.model_version == 0:
                 print('Episode: {} Reward: {:.3f} Loss: {:.3f} and {:.3f}' .format(episode, total_reward, loss[0], loss[1]))
             elif Config.model_version == 1:
-                print('Episode: {} Reward: {:.3f} Loss: {:.3f}' .format(episode, total_reward, loss))
+                print('Episode: {} Reward: {:.3f} Loss: {:.3f}' .format(episode, total_reward, loss[0]))
         agent.update_epsilon_by_epoch(episode)
 
 if __name__ == "__main__":
