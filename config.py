@@ -3,10 +3,10 @@ class Config(object):
     model_version = 0
     epsilon_start = 1.0
     epsilon_final = 0.0001
-    epsilon_decay = 5000.0
+    epsilon_decay = 2000.0          # less, focus faster
     logs_path = './logs/'
-    initial_observe_episode = 1000
-    reply_buffer_size = 5000
+    initial_observe_episode = 100
+    reply_buffer_size = 3000
     total_episode = 50000
     discount_factor = 0.99
     save_logs_frequency = 5000

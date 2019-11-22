@@ -38,24 +38,32 @@ def main():
         while not env.streaming_finish():
             if Config.model_version == 0:
                 action_1, action_2 = agent.take_action(np.array([state]))
-            elif Config.model_version == 1:
-                pass
-                # action = agent.take_action(np.array([state]))
-                # action_1 = 
-                # action_2 = 
-            # print(action_1, action_2)
-            reward = env.act(action_1, action_2)
-            # print(reward)
-            state_new = env.get_state()
-            total_reward += reward
-            action_onehots = []
-            action_1_onehot = np.zeros(action_dims[0])
-            action_2_onehot = np.zeros(action_dims[1])
-            action_1_onehot[action_1] = 1
-            action_2_onehot[action_2] = 1
-            # print(env.streaming_finish())
-            reply_buffer.append((state, action_1_onehot, action_2_onehot, reward, state_new, env.streaming_finish()))
-            state = state_new
+                # print(action_1, action_2)
+                reward = env.act(action_1, action_2)
+                # print(reward)
+                state_new = env.get_state()
+                total_reward += reward
+                action_onehots = []
+                action_1_onehot = np.zeros(action_dims[0])
+                action_2_onehot = np.zeros(action_dims[1])
+                action_1_onehot[action_1] = 1
+                action_2_onehot[action_2] = 1
+                # print(env.streaming_finish())
+                reply_buffer.append((state, action_1_onehot, action_2_onehot, reward, state_new, env.streaming_finish()))
+                state = state_new
+            elif Config.model_version == 1:                
+                action = agent.take_action(np.array([state]))
+                action_1 = int(action/action_dims[0])
+                action_2 = action%action_dims[0]
+                reward = env.act(action_1, action_2)
+                # print(reward)
+                state_new = env.get_state()
+                total_reward += reward
+                action_onehot = np.zeros(action_dims[0]*action_dims[1])
+                action_onehot[action] = 1
+                # print(env.streaming_finish())
+                reply_buffer.append((state, action_onehot, reward, state_new, env.streaming_finish()))
+                state = state_new
 
         # sample batch from reply buffer
         if episode < Config.observe_episode:
@@ -65,11 +73,15 @@ def main():
         if episode % Config.update_target_frequency == 0:
             agent.update_target_network()
 
-        batch_state, batch_actions_1, batch_actions_2, batch_reward, batch_state_new, batch_over = reply_buffer.sample()
+        if Config.model_version == 0:
+            batch_state, batch_actions_1, batch_actions_2, batch_reward, batch_state_new, batch_over = reply_buffer.sample()
+            # update policy network
+            loss = agent.update_Q_network_v1(batch_state, batch_actions_1, batch_actions_2, batch_reward, batch_state_new, batch_over)
 
-        # update policy network
-        loss = agent.update_Q_network(batch_state, batch_actions_1, batch_actions_2, batch_reward, batch_state_new, batch_over)
-
+        elif Config.model_version == 1:
+            batch_state, batch_actions, batch_reward, batch_state_new, batch_over = reply_buffer.sample()
+            loss = agent.update_Q_network_v2(batch_state, batch_actions, batch_reward, batch_state_new, batch_over)
+        
         loss_logs.extend([[episode, loss]])
         reward_logs.extend([[episode, total_reward]])
 
@@ -82,8 +94,10 @@ def main():
 
         # print reward and loss
         if episode % Config.show_loss_frequency == 0: 
-            print('Episode: {} Reward: {:.3f} Loss: {:.3f} and {:.3f}' .format(episode, total_reward, loss[0], loss[1]))
-
+            if Config.model_version == 0:
+                print('Episode: {} Reward: {:.3f} Loss: {:.3f} and {:.3f}' .format(episode, total_reward, loss[0], loss[1]))
+            elif Config.model_version == 1:
+                print('Episode: {} Reward: {:.3f} Loss: {:.3f}' .format(episode, total_reward, loss))
         agent.update_epsilon_by_epoch(episode)
 
 if __name__ == "__main__":

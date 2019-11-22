@@ -41,20 +41,40 @@ class Model(nn.Module):
             fc1_out = self.fc1(observation[:, 5:, -1])                                                     # input: (1,5) output: (1, 32)
             fc2_out = self.fc2(torch.cat((torch.flatten(lstm1_out, start_dim=1), fc1_out), 1))                      # flatten: (1,15,2*32) to (1,-1) and cat with (1,32)
             advantages=[self.multi_output_1(fc2_out), self.multi_output_2(fc2_out)]
-        return advantages
+            return advantages
+        elif Config.model_version == 1:
+            lstm1_out, (hn, cn) = self.lstm1(torch.transpose(observation[:, 0:5,:], 1, 2), (h0,c0))         # input: (5, 15) to (1,15,5) , output: (1,15, 2*32)
+            fc1_out = self.fc1(observation[:, 5:, -1])
+            fc2_out = self.fc2(torch.cat((torch.flatten(lstm1_out, start_dim=1), fc1_out), 1))                      # flatten: (1,15,2*32) to (1,-1) and cat with (1,32)
+            advantage = self.output(fc2_out)
+            return advantage
 
     def save(self, path, step, optimizers):
-        torch.save({
-            'step': step,
-            'state_dict': self.state_dict(),
-            'optimizer_1': optimizers[0].state_dict(),
-            'optimizer_2': optimizers[1].state_dict(),
-        }, path)
+        if Config.model_version == 0:
+            torch.save({
+                'step': step,
+                'state_dict': self.state_dict(),
+                'optimizer_1': optimizers[0].state_dict(),
+                'optimizer_2': optimizers[1].state_dict(),
+            }, path)
+        elif Config.model_version == 1:
+            torch.save({
+                'step': step,
+                'state_dict': self.state_dict(),
+                'optimizer': optimizers.state_dict()
+            }, path)
             
     def load(self, checkpoint_path, optimizer=None):
-        checkpoint = torch.load(checkpoint_path)
-        step = checkpoint['step']
-        self.load_state_dict(checkpoint['state_dict'])
-        if optimizers is not None:
-            optimizers[0].load_state_dict(checkpoint['optimizer1'])
-            optimizers[1].load_state_dict(checkpoint['optimizer2'])
+        if Config.model_version == 1:
+            checkpoint = torch.load(checkpoint_path)
+            step = checkpoint['step']
+            self.load_state_dict(checkpoint['state_dict'])
+            if optimizers is not None:
+                optimizers[0].load_state_dict(checkpoint['optimizer1'])
+                optimizers[1].load_state_dict(checkpoint['optimizer2'])
+        elif Config.model_version == 1:
+            checkpoint = torch.load(checkpoint_path)
+            step = checkpoint['step']
+            self.load_state_dict(checkpoint['state_dict'])
+            if optimizer is not None:
+                optimizer.load_state_dict(checkpoint['optimizer'])

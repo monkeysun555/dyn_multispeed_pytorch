@@ -37,13 +37,13 @@ class Agent:
                 {'params': self.Q_network.lstm1.parameters()},
                 ], lr=0.5*Config.lr)]
         elif Config.model_version == 1:
-            pass
+            self.optimizers = optim.Adam(self.Q_network.parameters(), lr=Config.lr)
     
     def update_target_network(self):
         # copy current_network to target network
         self.target_network.load_state_dict(self.Q_network.state_dict())
     
-    def update_Q_network(self, state, action_1, action_2, reward, state_new, terminal):
+    def update_Q_network_v1(self, state, action_1, action_2, reward, state_new, terminal):
         state = torch.from_numpy(state).float()
         action_1 = torch.from_numpy(action_1).float()
         action_2 = torch.from_numpy(action_2).float()
@@ -51,8 +51,8 @@ class Agent:
         terminal = torch.from_numpy(terminal).float()
         reward = torch.from_numpy(reward).float()
         state = Variable(state).cuda()
-        action_1 = Variable(action_1).cuda()                  # shape (batch, 2, 6)
-        action_2 = Variable(action_2).cuda()                  # shape (batch, 2, 6)
+        action_1 = Variable(action_1).cuda()                 
+        action_2 = Variable(action_2).cuda()
         state_new = Variable(state_new).cuda()
         terminal = Variable(terminal).cuda()
         reward = Variable(reward).cuda()
@@ -69,20 +69,61 @@ class Agent:
         # Different loss and object
         # use target network to evaluate value y = r + discount_factor * Q_tar(s', a')
         
-        if Config.model_version == 0:
-            actions = [action_1, action_2]
-            y = [reward + torch.mul(((self.target_network.forward(state_new)[new_q_idx]*actions_new_onehot[new_q_idx]).sum(dim=1)*terminal),Config.discount_factor) for new_q_idx in range(len(self.target_network.forward(state_new)))]
-            self.Q_network.train()
-            Q = [(self.Q_network.forward(state)[q_idx]*actions[q_idx]).sum(dim=1) for q_idx in range(len(self.Q_network.forward(state)))]
-            losses = []
-            for action_idx in range(len(self.action_dims)):
-                # y = reward + torch.mul(((self.target_network.forward(state_new)[action_idx]*actions_new_onehot[action_idx]).sum(dim=1)*terminal), Config.discount_factor)
-                # Q = (self.Q_network.forward(state)[action_idx]*actions[action_idx]).sum(dim=1)
-                loss = mse_loss(input=Q[action_idx], target=y[action_idx].detach())
-                self.optimizers[action_idx].zero_grad()
-                loss.backward()
-                self.optimizers[action_idx].step()
-                losses.append(loss.item())
+        actions = [action_1, action_2]
+        pre_y = self.target_network.forward(state_new)
+        y = []
+        for new_q_idx in range(len(pre_y)):
+            y.append(reward + torch.mul(((pre_y[new_q_idx]*actions_new_onehot[new_q_idx]).sum(dim=1)*terminal),Config.discount_factor))
+        self.Q_network.train()
+        pre_Q = self.Q_network.forward(state)
+        Q = []
+        for q_idx in range(len(pre_Q)):
+            Q.append((pre_Q[q_idx]*actions[q_idx]).sum(dim=1))
+        losses = []
+        for action_idx in range(len(self.action_dims)):
+            # y = reward + torch.mul(((self.target_network.forward(state_new)[action_idx]*actions_new_onehot[action_idx]).sum(dim=1)*terminal), Config.discount_factor)
+            # Q = (self.Q_network.forward(state)[action_idx]*actions[action_idx]).sum(dim=1)
+            loss = mse_loss(input=Q[action_idx], target=y[action_idx].detach())
+            self.optimizers[action_idx].zero_grad()
+            loss.backward()
+            self.optimizers[action_idx].step()
+            losses.append(loss.item())
+        return losses
+
+    def update_Q_network_v2(self, state, action, reward, state_new, terminal):
+        state = torch.from_numpy(state).float()
+        action = torch.from_numpy(action).float()
+        state_new = torch.from_numpy(state_new).float()
+        terminal = torch.from_numpy(terminal).float()
+        reward = torch.from_numpy(reward).float()
+        state = Variable(state).cuda()
+        action = Variable(action).cuda()                  # shape (batch, 6*7)
+        state_new = Variable(state_new).cuda()
+        terminal = Variable(terminal).cuda()
+        reward = Variable(reward).cuda()
+        self.Q_network.eval()
+        self.target_network.eval()
+        
+        # use current network to evaluate action argmax_a' Q_current(s', a')_
+        # actions_new = self.Q_network.forward(state_new).max(dim=2)[1].cpu().data.view(-1, 1)        # To be modified
+        # actions_new = self.Q_network.forward(state_new).max(dim=2)[1].cpu().data.view(-1, 1)        # To be modified
+        actions_new = self.Q_network.forward(state_new).max(dim=1)[1].cpu().data.view(-1, 1)
+        actions_new_onehot = torch.zeros(Config.sampling_batch_size, self.action_dims[0]*self.action_dims[1]) 
+        actions_new_onehot = Variable(actions_new_onehot.scatter_(1, actions_new, 1.0)).cuda()
+        
+        # Different loss and object
+        # use target network to evaluate value y = r + discount_factor * Q_tar(s', a')
+        y = reward + torch.mul(((self.target_network.forward(state_new)*actions_new_onehot).sum(dim=1)*terminal),Config.discount_factor)
+        self.Q_network.train()
+        Q = (self.Q_network.forward(state)*actions).sum(dim=1)
+        losses = []
+        # y = reward + torch.mul(((self.target_network.forward(state_new)[action_idx]*actions_new_onehot[action_idx]).sum(dim=1)*terminal), Config.discount_factor)
+        # Q = (self.Q_network.forward(state)[action_idx]*actions[action_idx]).sum(dim=1)
+        loss = mse_loss(input=Q, target=y.detach())
+        self.optimizers.zero_grad()
+        loss.backward()
+        self.optimizers.step()
+        losses.append(loss.item())
         return losses
 
     def take_action(self, state):
@@ -99,11 +140,12 @@ class Agent:
         elif Config.model_version == 1:
             estimate = torch.max(self.Q_network.forward(state), 1)[1].data[0]
             if random.random() < self.epsilon:
-                return [random.randint(0, self.action_dims[action_idx]-1) for action_idx in range(len(self.action_dims))]
+                return random.randint(0, self.action_dims[0]*self.action_dims[1]-1)
             else:
                 return estimate
+
     def update_epsilon_by_epoch(self, epoch):
-        self.epsilon = self.epsilon_final + (self.epsilon_start - self.epsilon_final) * math.exp(-1. * epoch / self.epsilon_decay)       
+        self.epsilon = self.epsilon_final+(self.epsilon_start - self.epsilon_final) * math.exp(-1.*epoch/self.epsilon_decay)       
     
     def save(self, step, logs_path):
         os.makedirs(logs_path, exist_ok=True)
@@ -116,19 +158,24 @@ class Agent:
         print('=> Save {}' .format(logs_path)) 
     
     def restore(self, logs_path):
-        self.Q_network.load(logs_path, self.optimizers)
-        self.target_network.load(logs_path, self.optimizers)
-        print('=> Restore {}' .format(logs_path)) 
         if Config.model_version == 0:
-            self.optimizers = [optim.Adam([
-                {'params': self.Q_network.multi_output_1.parameters(), 'lr':Config.lr},
-                {'params': self.Q_network.fc2.parameters()},
-                {'params': self.Q_network.fc1.parameters()},
-                {'params': self.Q_network.lstm1.parameters()},
-                ], lr=0.5*Config.lr), 
-                optim.Adam([
-                {'params': self.Q_network.multi_output_2.parameters(), 'lr':Config.lr},
-                {'params': self.Q_network.fc2.parameters()},
-                {'params': self.Q_network.fc1.parameters()},
-                {'params': self.Q_network.lstm1.parameters()},
-                ], lr=0.5*Config.lr)]
+            self.Q_network.load(logs_path, self.optimizers)
+            self.target_network.load(logs_path, self.optimizers)
+            print('=> Restore {}' .format(logs_path)) 
+            # self.optimizers = [optim.Adam([
+            #     {'params': self.Q_network.multi_output_1.parameters(), 'lr':Config.lr},
+            #     {'params': self.Q_network.fc2.parameters()},
+            #     {'params': self.Q_network.fc1.parameters()},
+            #     {'params': self.Q_network.lstm1.parameters()},
+            #     ], lr=0.5*Config.lr), 
+            #     optim.Adam([
+            #     {'params': self.Q_network.multi_output_2.parameters(), 'lr':Config.lr},
+            #     {'params': self.Q_network.fc2.parameters()},
+            #     {'params': self.Q_network.fc1.parameters()},
+            #     {'params': self.Q_network.lstm1.parameters()},
+            #     ], lr=0.5*Config.lr)]
+        elif Config.model_version == 1:
+            self.Q_network.load(logs_path, self.optimizers)
+            self.target_network.load(logs_path, self.optimizers)
+            print('=> Restore {}' .format(logs_path))
+
