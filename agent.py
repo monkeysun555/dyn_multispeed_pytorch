@@ -91,7 +91,7 @@ class Agent:
                 loss.backward()
             self.optimizers[action_idx].step()
             losses.append(loss.item())
-        print(losses)
+        # print(losses)
         return losses
 
     def update_Q_network_v2(self, state, action, reward, state_new, terminal):
