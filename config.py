@@ -1,14 +1,14 @@
 # Configuration for all files
 class Config(object):
-    model_version = 1           #v0: two outputs,   v1: one (6*7) output
+    model_version = 0           #v0: two outputs,   v1: one (6*7) output
     epsilon_start = 1.0
     epsilon_final = 0.0001
     epsilon_decay = 2000.0          # less, focus faster
-    logs_path = './logs' + str(model_version) + '/'
+    logs_path = './logs_' + str(model_version) + '/'
     reply_buffer_size = 3000
     total_episode = 50000
     discount_factor = 0.99
-    save_logs_frequency = 5000
+    save_logs_frequency = 1000
     lr = 1e-3
     momentum = 0.9
     # batch_size = 300
