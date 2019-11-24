@@ -36,20 +36,24 @@ def main():
     agent.restore(model_path)
 
     if massive:
+
         while True:
             # Start testing
             env_end = env.reset()
             if env_end:
                 break
+            testing_start_time = env.get_server_time()
+            tp_trace, time_trace, trace_name, starting_idx = env.get_player_trace_info()
+            log_path = Config.massive_result_files + cooked_name
+            log_file = open(log_path, 'w')
             env.act(0, 3)   # Default
             state = env.get_state()
-            # state = np.stack([[obs for _ in range(4)]], axis=0)
             total_reward = 0.0
             while not env.streaming_finish():
                 if model_v == 0:
                     action_1, action_2 = agent.take_action(np.array([state]))
                     # print(action_1, action_2)
-                    reward = env.act(action_1, action_2)
+                    reward = env.act(action_1, action_2,log_file)
                     state_new = env.get_state()
                     state = state_new
                     total_reward += reward
@@ -58,22 +62,31 @@ def main():
                     action = agent.take_action(np.array([state]))
                     action_1 = int(action/action_dims[1])
                     action_2 = action%action_dims[1]
-                    reward = env.act(action_1, action_2)
+                    reward = env.act(action_1, action_2,log_file)
                     # print(reward)
                     state_new = env.get_state()
                     state = state_new
                     total_reward += reward
 
-
-
+            
+            # Get initial latency of player and how long time is used. and tp/time trace
+            testing_duration = env.server.get_time() - testing_start_time
+            tp_record, time_record = get_tp_time_trace_info(tp_trace, time_trace, starting_idx, time_duration + env.player.get_buffer())
+            log_file.write('\t'.join(str(tp) for tp in tp_record))
+            log_file.write('\n')
+            log_file.write('\t'.join(str(time) for time in time_record))
+            # log_file.write('\n' + str(IF_NEW))
+            log_file.write('\n' + str(testing_start_time))
+            log_file.write('\n')
+            log_file.close()
 
     else:
-        # Single testing
-        env_end = env.reset()
-        env.act(0, 3)   # Default
-        state = env.get_state()
-        # state = np.stack([[obs for _ in range(4)]], axis=0)
-        total_reward = 0.0
+        # # Single testing
+        # env_end = env.reset()
+        # env.act(0, 3)   # Default
+        # state = env.get_state()
+        # total_reward = 0.0
+        pass
 
 if __name__ == '__main__':
     main()

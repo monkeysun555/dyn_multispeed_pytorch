@@ -15,11 +15,12 @@ MS_IN_S = 1000.0    # in ms
 KB_IN_MB = 1000.0   # in ms
 
 class Live_Player(object):
-    def __init__(self, throughput_trace, time_trace, randomSeed = RANDOM_SEED):
+    def __init__(self, throughput_trace, time_trace, trace_name, randomSeed = RANDOM_SEED):
         np.random.seed(randomSeed)
         
         self.throughput_trace = throughput_trace
         self.time_trace = time_trace
+        self.trace_name = trace_name
 
         self.playing_time = 0.0
         self.time_idx = np.random.randint(1,len(self.time_trace))
@@ -281,29 +282,29 @@ class Live_Player(object):
         # return sync
         pass
 
-    def reset(self, throughput_trace, time_trace):
+    def reset(self, throughput_trace, time_trace, trace_name):
         self.playing_time = 0.0
 
         self.throughput_trace = throughput_trace
         self.time_trace = time_trace
+        self.trace_name = trace_name
 
         self.time_idx = np.random.randint(1,len(self.time_trace))
         self.last_trace_time = self.time_trace[self.time_idx-1] * MS_IN_S # in ms
         self.buffer = 0.0   # ms
         self.state = 0  # 0: start up.  1: traceing. 2: rebuffering
 
-    # def test_reset(self, random_seed):
-    #     np.random.seed(random_seed)
-    #     self.playing_time = 0.0
-    #     self.trace_idx += 1
-    #     if self.trace_idx >= len(self.time_traces):
-    #         self.trace_idx = 0
-    #     self.throughput_trace = self.throughput_traces[self.trace_idx]
-    #     self.time_trace = self.time_traces[self.trace_idx]
-    #     self.time_idx = np.random.randint(1,len(self.time_trace))
-    #     self.last_trace_time = self.time_trace[self.time_idx-1] * MS_IN_S   # in ms
-    #     self.buffer = 0.0   # ms
-    #     self.state = 0  # 0: start up.  1: playing. 2: rebuffering
+    def get_time_idx(self):
+        return self.time_idx
+
+    def get_tp_trace(self):
+        return self.throughput_trace
+
+    def get_time_trace(self):
+        return self.time_trace
+
+    def get_trace_name(self):
+        return self.trace_name
 
     def get_display_time(self):
         return self.playing_time

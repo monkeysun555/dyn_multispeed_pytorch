@@ -38,7 +38,6 @@ def main():
         env_end = env.reset()
         env.act(0, 3)   # Default
         state = env.get_state()
-        # state = np.stack([[obs for _ in range(4)]], axis=0)
         total_reward = 0.0
 
         # Update epsilon

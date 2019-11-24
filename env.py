@@ -14,7 +14,7 @@ SPEEDS = [-100.0, 0.75, 0.90, 1.0, 1.10, 1.25, 100.0]
 
 class Live_Streaming(object):
     def __init__(self, testing=False, trace_idx=None):
-        self.time_traces, self.throughput_traces, _ = load_bandwidth()
+        self.time_traces, self.throughput_traces, self.name_traces = load_bandwidth()
         if testing:
             if massive: 
                 self.trace_idx = -1     # After first reset, it is 0
@@ -23,7 +23,7 @@ class Live_Streaming(object):
         else:
             self.trace_idx = np.random.randint(len(self.throughput_traces))
         # Initial server and player
-        self.player = Live_Player(self.throughput_traces[self.trace_idx], self.time_traces[self.trace_idx], randomSeed=RANDOM_SEED)
+        self.player = Live_Player(self.throughput_traces[self.trace_idx], self.time_traces[self.trace_idx], self.name_traces[self.trace_idx] randomSeed=RANDOM_SEED)
         self.server = Live_Server()
         self.init_buffer = self.server.get_time()
 
@@ -38,9 +38,9 @@ class Live_Streaming(object):
         self.video_length = 0
         self.ending_flag = 0
 
-    def act(self, action_1, action_2):
+    def act(self, action_1, action_2, log_file=None):
         # Initial iteration variables
-        action_reward = 0
+        action_reward = 0.0
         take_action = 1
         latency = self.server.get_time() - self.player.get_display_time()
         state = self.state
@@ -53,6 +53,9 @@ class Live_Streaming(object):
         # Do pre processing in previous iteration
         # The first step in this function is to fetch()
         # But has to check if self.take_action
+        action_freezing = 0.0
+        action_wait = 0.0
+
         while True:
             # Initial reward
             smooth_p = 0.0
@@ -178,6 +181,9 @@ class Live_Streaming(object):
             state[9, -1] = transformed_action_2                             # playing speed, 0.75 to 1.25
 
             state = self.normal(state)
+
+            action_freezing += freezing
+            action_wait += server_wait_time
             # Check whether a segment is finished
             if self.server.check_take_action():
                 self.state = state
@@ -186,6 +192,19 @@ class Live_Streaming(object):
                     # A sequence is terminated, to reset
                     self.ending_flag = 1
                     # self.reset()          # Do reset in main.py
+                if log_file:
+                    log_file.write( str(self.server.get_time()) + '\t' +
+                            str(self.bitrates[action_1]) + '\t' +
+                            str(self.player.get_buffer()) + '\t' +
+                            str(action_freezing) + '\t' +
+                            str(time_out) + '\t' +
+                            str(action_wait) + '\t' +
+                            str(latency) + '\t' +
+                            str(self.player.get_state()) + '\t' +
+                            str(int(action_1/len(self.bitrates))) + '\t' +
+                            str(action_2) + '\t' + 
+                            str(action_reward) + '\n') 
+                    log_file.flush()
                 return action_reward
 
     def normal(self, state):
@@ -200,6 +219,12 @@ class Live_Streaming(object):
         state[8, -1] = state[8, -1]/2.0
         state[9, -1] = state[9, -1]/self.speeds[-2]
         return state
+
+    def get_server_time(self):
+        return self.init_buffer
+
+    def get_player_trace_info(self):
+        return self.player.get_tp_trace(), self.player.get_time_trace(), self.player.get_trace_name(), self.player.get_time_idx()
 
     def get_action_info(self):
         return Env_Config.a_num, Env_Config.a_dims
@@ -216,7 +241,7 @@ class Live_Streaming(object):
             self.trace_idx += 1
             if self.trace_idx == len(self.throughput_traces):
                 return 1
-            self.player.reset(self.throughput_traces[self.trace_idx], self.time_traces[self.trace_idx])
+            self.player.reset(self.throughput_traces[self.trace_idx], self.time_traces[self.trace_idx], self.name_traces[self.trace_idx])
             self.server.reset()
             self.ending_flag = 0
             self.video_length = 0
@@ -224,7 +249,7 @@ class Live_Streaming(object):
         else:
             self.state = np.zeros((Env_Config.s_info, Env_Config.s_len))
             self.trace_idx = np.random.randint(len(self.throughput_traces))
-            self.player.reset(self.throughput_traces[self.trace_idx], self.time_traces[self.trace_idx])
+            self.player.reset(self.throughput_traces[self.trace_idx], self.time_traces[self.trace_idx], self.name_traces[self.trace_idx])
             self.server.reset()
             self.ending_flag = 0
             self.video_length = 0
@@ -273,28 +298,7 @@ class Live_Streaming(object):
     def get_repeat_penalty(self):
         return Env_Config.repeat_seg_penalty*Env_Config.repeat_segs
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-    
-
-
-
-
-    
-
-
-
+    def flush_state(self, log_file):
+        # Record info
+        
 

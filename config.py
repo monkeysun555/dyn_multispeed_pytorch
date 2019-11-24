@@ -18,6 +18,7 @@ class Config(object):
     show_loss_frequency = 1000
     maximum_model = 5
 
+    massive_result_files = './all_results/'
 
 class Env_Config(object):
     # For environment, ms
