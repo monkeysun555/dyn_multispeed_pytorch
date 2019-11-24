@@ -28,7 +28,7 @@ def main():
     model_e = args.episode
     model_v = args.version
 
-    env = Env.Live_Streaming(testing=True)
+    env = Env.Live_Streaming(testing=True, massive=massive)
     _, action_dims = env.get_action_info()
     # reply_buffer = Reply_Buffer(Config.reply_buffer_size)
     agent = Agent(action_dims)
@@ -36,7 +36,6 @@ def main():
     agent.restore(model_path)
 
     if massive:
-
         while True:
             # Start testing
             env_end = env.reset()
@@ -66,9 +65,7 @@ def main():
                     # print(reward)
                     state_new = env.get_state()
                     state = state_new
-                    total_reward += reward
-
-            
+                    total_reward += reward            
             # Get initial latency of player and how long time is used. and tp/time trace
             testing_duration = env.server.get_time() - testing_start_time
             tp_record, time_record = get_tp_time_trace_info(tp_trace, time_trace, starting_idx, time_duration + env.player.get_buffer())
@@ -79,7 +76,6 @@ def main():
             log_file.write('\n' + str(testing_start_time))
             log_file.write('\n')
             log_file.close()
-
     else:
         # # Single testing
         # env_end = env.reset()

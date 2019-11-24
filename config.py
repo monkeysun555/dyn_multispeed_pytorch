@@ -19,6 +19,7 @@ class Config(object):
     maximum_model = 5
 
     massive_result_files = './all_results/'
+    trace_idx = 2
 
 class Env_Config(object):
     # For environment, ms
