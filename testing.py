@@ -27,7 +27,11 @@ def main():
     massive = args.massive
     model_e = args.episode
     model_v = args.version
-    print(massive, model_e, model_v)
+    # check results log path
+    if not os.path.exists(Config.massive_result_files):
+         os.makedirs(Config.massive_result_files) 
+    # print(massive, model_e, model_v)
+    
     env = Env.Live_Streaming(testing=True, massive=massive)
     _, action_dims = env.get_action_info()
     # reply_buffer = Reply_Buffer(Config.reply_buffer_size)
@@ -35,9 +39,7 @@ def main():
     agent.set_epsilon_for_testing()
     model_path = './logs_' +str(model_v) + '/model-' + model_e + '.pth' 
     agent.restore(model_path)
-    # check results log path
-    if not os.path.exists(Config.massive_result_files):
-         os.makedirs(Config.massive_result_files) 
+
     if massive:
         while True:
             # Start testing
@@ -72,7 +74,7 @@ def main():
             print('File: ', trace_name, ' reward is: ', total_reward) 
             # Get initial latency of player and how long time is used. and tp/time trace
             testing_duration = env.server.get_time() - testing_start_time
-            tp_record, time_record = get_tp_time_trace_info(tp_trace, time_trace, starting_idx, time_duration + env.player.get_buffer())
+            tp_record, time_record = get_tp_time_trace_info(tp_trace, time_trace, starting_idx, testing_duration + env.player.get_buffer())
             log_file.write('\t'.join(str(tp) for tp in tp_record))
             log_file.write('\n')
             log_file.write('\t'.join(str(time) for time in time_record))

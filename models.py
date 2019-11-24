@@ -65,7 +65,7 @@ class Model(nn.Module):
             }, path)
             
     def load(self, checkpoint_path, optimizer=None):
-        if Config.model_version == 1:
+        if Config.model_version == 0:
             checkpoint = torch.load(checkpoint_path)
             step = checkpoint['step']
             self.load_state_dict(checkpoint['state_dict'])

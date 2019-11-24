@@ -83,11 +83,11 @@ def main():
         if Config.model_version == 0:
             batch_state, batch_actions_1, batch_actions_2, batch_reward, batch_state_new, batch_over = reply_buffer.sample()
             # update policy network
-            loss = agent.update_Q_network_v1(batch_state, batch_actions_1, batch_actions_2, batch_reward, batch_state_new, batch_over)
+            loss = agent.update_Q_network_v0(batch_state, batch_actions_1, batch_actions_2, batch_reward, batch_state_new, batch_over)
 
         elif Config.model_version == 1:
             batch_state, batch_actions, batch_reward, batch_state_new, batch_over = reply_buffer.sample()
-            loss = agent.update_Q_network_v2(batch_state, batch_actions, batch_reward, batch_state_new, batch_over)
+            loss = agent.update_Q_network_v1(batch_state, batch_actions, batch_reward, batch_state_new, batch_over)
         
         loss_logs.extend([[episode, loss]])
         reward_logs.extend([[episode, total_reward]])

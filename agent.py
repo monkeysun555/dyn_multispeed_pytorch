@@ -43,7 +43,7 @@ class Agent:
         # copy current_network to target network
         self.target_network.load_state_dict(self.Q_network.state_dict())
     
-    def update_Q_network_v1(self, state, action_1, action_2, reward, state_new, terminal):
+    def update_Q_network_v0(self, state, action_1, action_2, reward, state_new, terminal):
         state = torch.from_numpy(state).float()
         action_1 = torch.from_numpy(action_1).float()
         action_2 = torch.from_numpy(action_2).float()
@@ -94,7 +94,7 @@ class Agent:
         # print(losses)
         return losses
 
-    def update_Q_network_v2(self, state, action, reward, state_new, terminal):
+    def update_Q_network_v1(self, state, action, reward, state_new, terminal):
         state = torch.from_numpy(state).float()
         action = torch.from_numpy(action).float()
         state_new = torch.from_numpy(state_new).float()
