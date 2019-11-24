@@ -6,15 +6,24 @@ import math
 from config import Env_Config
 from player import *
 from server import *
+from utils import load_bandwidth, load_single_trace
 
 RANDOM_SEED = 1           
 BIT_RATES = [300.0, 500.0, 1000.0, 2000.0, 3000.0, 6000.0]
 SPEEDS = [-100.0, 0.75, 0.90, 1.0, 1.10, 1.25, 100.0]
 
 class Live_Streaming(object):
-    def __init__(self):
+    def __init__(self, testing=False, trace_idx=None):
+        self.time_traces, self.throughput_traces, _ = load_bandwidth()
+        if testing:
+            if massive: 
+                self.trace_idx = -1     # After first reset, it is 0
+            else:
+                self.trace_idx = trace_idx
+        else:
+            self.trace_idx = np.random.randint(len(self.throughput_traces))
         # Initial server and player
-        self.player = Live_Player(randomSeed=RANDOM_SEED)
+        self.player = Live_Player(self.throughput_traces[self.trace_idx], self.time_traces[self.trace_idx], randomSeed=RANDOM_SEED)
         self.server = Live_Server()
         self.init_buffer = self.server.get_time()
 
@@ -201,12 +210,25 @@ class Live_Streaming(object):
     def streaming_finish(self):
         return self.ending_flag
 
-    def reset(self):
-        self.state = np.zeros((Env_Config.s_info, Env_Config.s_len))
-        self.player.reset()
-        self.server.reset()
-        self.ending_flag = 0
-        self.video_length = 0
+    def reset(self, testing=False):
+        if testing:
+            self.state = np.zeros((Env_Config.s_info, Env_Config.s_len))
+            self.trace_idx += 1
+            if self.trace_idx == len(self.throughput_traces):
+                return 1
+            self.player.reset(self.throughput_traces[self.trace_idx], self.time_traces[self.trace_idx])
+            self.server.reset()
+            self.ending_flag = 0
+            self.video_length = 0
+            return 0
+        else:
+            self.state = np.zeros((Env_Config.s_info, Env_Config.s_len))
+            self.trace_idx = np.random.randint(len(self.throughput_traces))
+            self.player.reset(self.throughput_traces[self.trace_idx], self.time_traces[self.trace_idx])
+            self.server.reset()
+            self.ending_flag = 0
+            self.video_length = 0
+            return 0
 
     def translate_to_speed(self, action_2_index):
         # Translate to real speed

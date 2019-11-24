@@ -9,11 +9,18 @@ from reply_buffer import Reply_Buffer
 from agent import Agent
 from utils import *
 
-
-# USE_CUDA = torch.cuda.is_available()
-# Variable = lambda *args, **kwargs: autograd.Variable(*args, **kwargs).cuda() if USE_CUDA else autograd.Variable(*args, **kwargs)
+# def parse_args():
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument('-t', '--test', dest='test', help='do testing',
+#                         default=None, type=str)
+#     # parser.add_argument('-t', '--train', dest='train', help='train policy or not',
+#     #                     default=True, type=bool)
+#     args = parser.parse_args()
+#     return args
+# args = parse_args() 
 
 def main():
+    # restore = args.restore
     # Load env
     env = Env.Live_Streaming()
     _, action_dims = env.get_action_info()
@@ -21,13 +28,14 @@ def main():
     agent = Agent(action_dims)
     reward_logs = []
     loss_logs = []
+
     # restore model
     # if restore:
     #    agent.restore(restore)
 
     for episode in range(1, Config.total_episode+1):
         # reset env
-        env.reset()
+        env_end = env.reset()
         env.act(0, 3)   # Default
         state = env.get_state()
         # state = np.stack([[obs for _ in range(4)]], axis=0)
