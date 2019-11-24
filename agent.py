@@ -163,10 +163,10 @@ class Agent:
         self.Q_network.save(logs_path, step=step, optimizers=self.optimizers)
         print('=> Save {}' .format(logs_path)) 
     
-    def restore(self, logs_path):
+    def restore(self, logs_path, version=Config.model_version):
         if Config.model_version == 0:
-            self.Q_network.load(logs_path, self.optimizers)
-            self.target_network.load(logs_path, self.optimizers)
+            self.Q_network.load(logs_path, self.optimizers, version)
+            self.target_network.load(logs_path, self.optimizers, version)
             print('=> Restore {}' .format(logs_path)) 
             # self.optimizers = [optim.Adam([
             #     {'params': self.Q_network.multi_output_1.parameters(), 'lr':Config.lr},
@@ -181,7 +181,7 @@ class Agent:
             #     {'params': self.Q_network.lstm1.parameters()},
             #     ], lr=0.5*Config.lr)]
         elif Config.model_version == 1:
-            self.Q_network.load(logs_path, self.optimizers)
-            self.target_network.load(logs_path, self.optimizers)
+            self.Q_network.load(logs_path, self.optimizers, version)
+            self.target_network.load(logs_path, self.optimizers, version)
             print('=> Restore {}' .format(logs_path))
 

@@ -31,14 +31,14 @@ def main():
     if not os.path.exists(Config.massive_result_files):
          os.makedirs(Config.massive_result_files) 
     # print(massive, model_e, model_v)
-    
+
     env = Env.Live_Streaming(testing=True, massive=massive)
     _, action_dims = env.get_action_info()
     # reply_buffer = Reply_Buffer(Config.reply_buffer_size)
     agent = Agent(action_dims)
     agent.set_epsilon_for_testing()
     model_path = './logs_' +str(model_v) + '/model-' + model_e + '.pth' 
-    agent.restore(model_path)
+    agent.restore(model_path, model_v)
 
     if massive:
         while True:
