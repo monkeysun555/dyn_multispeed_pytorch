@@ -13,7 +13,7 @@ class Agent:
     def __init__(self, action_dims):
         # self.action_num = action_num
         self.action_dims = action_dims
-        # self.epsilon = Config.initial_epsilon
+        self.epsilon = Config.initial_epsilon
         self.epsilon_final = Config.epsilon_final
         self.epsilon_start = Config.epsilon_start
         self.epsilon_decay = Config.epsilon_decay
@@ -150,6 +150,8 @@ class Agent:
 
     def update_epsilon_by_epoch(self, epoch):
         self.epsilon = self.epsilon_final+(self.epsilon_start - self.epsilon_final) * math.exp(-1.*epoch/self.epsilon_decay)       
+    def set_epsilon_for_testing(self):
+        self.epsilon = 0.0
     
     def save(self, step, logs_path):
         os.makedirs(logs_path, exist_ok=True)

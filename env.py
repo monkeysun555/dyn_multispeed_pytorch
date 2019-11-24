@@ -299,7 +299,3 @@ class Live_Streaming(object):
     def get_repeat_penalty(self):
         return Env_Config.repeat_seg_penalty*Env_Config.repeat_segs
 
-    def flush_state(self, log_file):
-        # Record info
-        
-
