@@ -3,7 +3,7 @@ from config import Env_Config, Config
  
 class Live_Player(object):
     def __init__(self, throughput_trace, time_trace, trace_name, random_seed=Config.random_seed):
-        np.random.seed(random_seed)
+        # np.random.seed(random_seed)
         self.throughput_trace = throughput_trace
         self.time_trace = time_trace
         self.trace_name = trace_name

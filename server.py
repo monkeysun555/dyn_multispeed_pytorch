@@ -1,13 +1,15 @@
 import numpy as np
 from config import Env_Config, Config
+from random import Random
 
 class Live_Server(object):
     def __init__(self, random_seed=Config.random_seed):
-        np.random.seed(random_seed)
+        # np.random.seed(random_seed)
+        self.myRandom = Random(random_seed)
         self.seg_duration = Env_Config.seg_duration
         self.chunk_duration = Env_Config.chunk_duration
         self.chunk_in_seg = Env_Config.chunk_in_seg
-        self.time = np.random.randint(Env_Config.server_init_lat_low, Env_Config.server_init_lat_high)*Env_Config.seg_duration + np.random.randint(1,self.seg_duration)
+        self.time = self.myRandom.randint(Env_Config.server_init_lat_low, Env_Config.server_init_lat_high)*Env_Config.seg_duration + self.myRandom.randint(1,self.seg_duration)
         self.current_seg_idx = -1   # For initial
         self.current_chunk_idx = 0
         self.chunks = []    # 1 for initial chunk, 0 for following chunks
@@ -105,7 +107,7 @@ class Live_Server(object):
         return time_interval        # in ms
 
     def reset(self):
-        self.time = np.random.randint(Env_Config.server_init_lat_low, Env_Config.server_init_lat_high)*Env_Config.seg_duration + np.random.randint(1,self.seg_duration)   
+        self.time = self.myRandom.randint(Env_Config.server_init_lat_low, Env_Config.server_init_lat_high)*Env_Config.seg_duration + self.myRandom.randint(1,self.seg_duration)   
         self.current_seg_idx = -1
         self.current_chunk_idx = 0
         self.chunks = []    # 1 for initial chunk, 0 for following chunks

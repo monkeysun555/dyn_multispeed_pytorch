@@ -1,13 +1,13 @@
 # Configuration for all files
 class Config(object):
-    model_version = 0           #v0: two outputs,   v1: one (6*7) output
+    model_version = 1           #v0: two outputs,   v1: one (6*7) output
     initial_epsilon = 1.0 
     epsilon_start = 1.0
     epsilon_final = 0.0001
     if model_version == 0:
         epsilon_decay = 5000.0          # less, focus faster
     else:
-        epsilon_decay = 2000.0          # less, focus faster
+        epsilon_decay = 5000.0          # less, focus faster
     logs_path = './logs_' + str(model_version) + '/'
     reply_buffer_size = 3000
     total_episode = 50000

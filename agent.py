@@ -10,8 +10,7 @@ from config import Config
 from models import Model
 
 class Agent:
-    def __init__(self, action_dims, model_version=Config.model_version, random_seed=Config.random_seed):
-        np.random.seed(random_seed)
+    def __init__(self, action_dims, model_version=Config.model_version):
         # self.action_num = action_num
         self.action_dims = action_dims
         self.epsilon = Config.initial_epsilon
@@ -150,10 +149,20 @@ class Agent:
             else:
                 return estimate
 
+    def testing_take_action(self, state):
+        state = torch.from_numpy(state).float()
+        state = Variable(state).cuda()
+        self.Q_network.eval()
+        if self.model_version == 0:
+            estimate = [torch.max(q_value, 1)[1].data[0] for q_value in self.Q_network.forward(state)] 
+            # with epsilon prob to choose random action else choose argmax Q estimate action
+            return estimate
+        elif self.model_version == 1:
+            estimate = torch.max(self.Q_network.forward(state), 1)[1].data[0]
+            return estimate
+
     def update_epsilon_by_epoch(self, epoch):
-        self.epsilon = self.epsilon_final+(self.epsilon_start - self.epsilon_final) * math.exp(-1.*epoch/self.epsilon_decay)       
-    def set_epsilon_for_testing(self):
-        self.epsilon = 0.0
+        self.epsilon = self.epsilon_final+(self.epsilon_start - self.epsilon_final) * math.exp(-1.*epoch/self.epsilon_decay)   
     
     def save(self, step, logs_path):
         os.makedirs(logs_path, exist_ok=True)
