@@ -43,7 +43,7 @@ def main():
     if massive:
         while True:
             # Start testing
-            env_end = env.reset()
+            env_end = env.reset(testing=True)
             if env_end:
                 break
             testing_start_time = env.get_server_time()

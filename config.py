@@ -27,8 +27,10 @@ class Env_Config(object):
     bw_env_version = 0              # O for LTE (NYC), 1 for 3G (Norway)
     if bw_env_version == 0:
         data_dir = '../bw_traces/'
+        test_data_dir = '../bw_traces_test/cooked_test_traces/'
     elif bw_env_version == 1:
         data_dir = '../new_traces/train_sim_traces/'
+        test_data_dir = '../new_traces/test_sim_traces/'
     s_info = 10
     s_len = 15
     a_num = 2

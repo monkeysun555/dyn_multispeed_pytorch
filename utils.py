@@ -2,8 +2,11 @@ import os
 import numpy as np
 from config import Env_Config
 
-def load_bandwidth():
-    datas = os.listdir(Env_Config.data_dir)
+def load_bandwidth(testing=False):
+    if testing:
+        datas = os.listdir(Env_Config.test_data_dir)
+    else:
+        datas = os.listdir(Env_Config.data_dir)
     time_traces = []
     throughput_traces = []
     data_names = []
@@ -73,4 +76,3 @@ def get_tp_time_trace_info(tp_trace, time_trace, starting_time_idx, duration):
             time_offset += time_trace[-1]
         time_range = time_trace[starting_time_idx + i + offset] + time_offset - start_time
     return tp_record, time_record
-    

@@ -14,14 +14,15 @@ SPEEDS = [-100.0, 0.75, 0.90, 1.0, 1.10, 1.25, 100.0]
 
 class Live_Streaming(object):
     def __init__(self, testing=False, massive=False):
-        self.time_traces, self.throughput_traces, self.name_traces = load_bandwidth()
         if testing:
+            self.time_traces, self.throughput_traces, self.name_traces = load_bandwidth()
             if massive: 
                 self.trace_idx = -1     # After first reset, it is 0
             else:
                 assert trace_idx
                 self.trace_idx = Config.trace_idx
         else:
+            self.time_traces, self.throughput_traces, self.name_traces = load_bandwidth()
             self.trace_idx = np.random.randint(len(self.throughput_traces))
         # Initial server and player
         self.player = Live_Player(self.throughput_traces[self.trace_idx], self.time_traces[self.trace_idx], self.name_traces[self.trace_idx], randomSeed=RANDOM_SEED)
