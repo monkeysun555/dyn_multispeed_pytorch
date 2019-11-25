@@ -3,7 +3,7 @@ import os
 import logging
 import numpy as np
 import math
-from config import Env_Config
+from config import Env_Config, Config
 from player import *
 from server import *
 from utils import load_bandwidth, load_single_trace
