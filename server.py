@@ -17,6 +17,7 @@ EST_HIGH_NOISE = 1.02
 
 class Live_Server(object):
     def __init__(self):
+        np.random.seed(Config.random_seed)
         self.seg_duration = Env_Config.seg_duration
         self.chunk_duration = Env_Config.chunk_duration
         self.chunk_in_seg = Env_Config.chunk_in_seg

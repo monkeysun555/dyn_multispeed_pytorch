@@ -15,8 +15,8 @@ MS_IN_S = 1000.0    # in ms
 KB_IN_MB = 1000.0   # in ms
 
 class Live_Player(object):
-    def __init__(self, throughput_trace, time_trace, trace_name, randomSeed = RANDOM_SEED):
-        np.random.seed(randomSeed)
+    def __init__(self, throughput_trace, time_trace, trace_name):
+        np.random.seed(Config.random_seed)
         
         self.throughput_trace = throughput_trace
         self.time_trace = time_trace
