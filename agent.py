@@ -2,7 +2,7 @@ import torch
 from torch.nn.functional import mse_loss
 from torch.autograd import Variable
 import torch.optim as optim
-import random
+import numpy as np
 import glob
 import os
 import math
@@ -138,14 +138,14 @@ class Agent:
         if Config.model_version == 0:
             estimate = [torch.max(q_value, 1)[1].data[0] for q_value in self.Q_network.forward(state)] 
             # with epsilon prob to choose random action else choose argmax Q estimate action
-            if random.random() < self.epsilon:
-                return [random.randint(0, self.action_dims[action_idx]-1) for action_idx in range(len(self.action_dims))]
+            if np.random.random() < self.epsilon:
+                return [np.random.randint(0, self.action_dims[action_idx]-1) for action_idx in range(len(self.action_dims))]
             else:
                 return estimate
         elif Config.model_version == 1:
             estimate = torch.max(self.Q_network.forward(state), 1)[1].data[0]
-            if random.random() < self.epsilon:
-                return random.randint(0, self.action_dims[0]*self.action_dims[1]-1)
+            if np.random.random() < self.epsilon:
+                return np.random.randint(0, self.action_dims[0]*self.action_dims[1]-1)
             else:
                 return estimate
 
