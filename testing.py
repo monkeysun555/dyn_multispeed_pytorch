@@ -27,8 +27,8 @@ def main():
     model_e = args.episode
     model_v = args.version
     # check results log path
-    if not os.path.exists(Config.massive_result_files):
-         os.makedirs(Config.massive_result_files) 
+    if not os.path.exists(Config.massive_result_files + str(model_v) + '/'):
+         os.makedirs(Config.massive_result_files + str(model_v) + '/') 
     # print(massive, model_e, model_v)
 
     env = Env.Live_Streaming(testing=True, massive=massive)
@@ -48,7 +48,7 @@ def main():
             testing_start_time = env.get_server_time()
             print("Initial latency is: ", testing_start_time)
             tp_trace, time_trace, trace_name, starting_idx = env.get_player_trace_info()
-            log_path = Config.massive_result_files + trace_name 
+            log_path = Config.massive_result_files + str(model_v) + '/' + trace_name 
             log_file = open(log_path, 'w')
             env.act(0, 3)   # Default
             state = env.get_state()

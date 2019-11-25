@@ -22,7 +22,7 @@ class Config(object):
     show_loss_frequency = 1000
     maximum_model = 5
     random_seed = 10
-    massive_result_files = './all_results/'
+    massive_result_files = './all_results'
     trace_idx = 2
 
 class Env_Config(object):
