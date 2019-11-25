@@ -61,7 +61,7 @@ def main():
                     state_new = env.get_state()
                     state = state_new
                     total_reward += reward
-                    print(action_1, action_2, reward)
+                    # print(action_1, action_2, reward)
                 elif model_v == 1:
                     action = agent.take_action(np.array([state]))
                     action_1 = int(action/action_dims[1])

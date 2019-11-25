@@ -64,17 +64,17 @@ class Model(nn.Module):
                 'optimizer': optimizers.state_dict()
             }, path)
             
-    def load(self, checkpoint_path, optimizer=None, version=Config.model_version):
+    def load(self, checkpoint_path, optimizers=None, version=Config.model_version):
         if version == 0:
             checkpoint = torch.load(checkpoint_path)
             step = checkpoint['step']
             self.load_state_dict(checkpoint['state_dict'])
-            if optimizers is not None:
-                optimizers[0].load_state_dict(checkpoint['optimizer1'])
-                optimizers[1].load_state_dict(checkpoint['optimizer2'])
+            if not optimizers:
+                optimizers[0].load_state_dict(checkpoint['optimizer_1'])
+                optimizers[1].load_state_dict(checkpoint['optimizer_2'])
         elif version == 1:
             checkpoint = torch.load(checkpoint_path)
             step = checkpoint['step']
             self.load_state_dict(checkpoint['state_dict'])
-            if optimizer is not None:
+            if not optimizers:
                 optimizer.load_state_dict(checkpoint['optimizer'])
