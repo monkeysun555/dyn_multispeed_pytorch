@@ -1,19 +1,7 @@
 import numpy as np
 from config import Env_Config, Config
 
-SEG_DURATION = 1000.0
-CHUNK_DURATION = 200.0
-MS_IN_S = 1000.0
-KB_IN_MB = 1000.0
-BITRATE = [300.0, 500.0, 1000.0, 2000.0, 3000.0, 6000.0]
-BITRATE_LOW_NOISE = 0.7
-BITRATE_HIGH_NOISE = 1.3
-RATIO_LOW_2 = 2.0               # This is the lowest ratio between first chunk and the sum of all others
-RATIO_HIGH_2 = 10.0             # This is the highest ratio between first chunk and the sum of all others
-RATIO_LOW_5 = 0.75              # This is the lowest ratio between first chunk and the sum of all others
-RATIO_HIGH_5 = 1.0              # This is the highest ratio between first chunk and the sum of all others
-EST_LOW_NOISE = 0.98
-EST_HIGH_NOISE = 1.02
+
 
 class Live_Server(object):
     def __init__(self, random_seed=Config.random_seed):
@@ -25,7 +13,7 @@ class Live_Server(object):
         self.current_seg_idx = -1   # For initial
         self.current_chunk_idx = 0
         self.chunks = []    # 1 for initial chunk, 0 for following chunks
-        self.current_seg_size = [[] for i in range(len(BITRATE))]
+        self.current_seg_size = [[] for i in range(len(Env_Config.bitrate))]
         self.encoding_update(0.0, self.time)
         self.next_delivery = []
 
@@ -35,9 +23,9 @@ class Live_Server(object):
         self.next_delivery.extend(deliver_chunks[0][:2])    # Segment and chunk index of first chunk
         self.next_delivery.append(deliver_chunks[-1][1])    # The index of the last chunk
         delivery_sizes = []
-        for i in range(len(BITRATE)):
+        for i in range(len(Env_Config.bitrate)):
             delivery_sizes.append(np.sum([chunk[2][i] for chunk in deliver_chunks]))    
-        self.next_delivery.append(delivery_sizes)           # Total size of chunks for each bitrate
+        self.next_delivery.append(delivery_sizes)           # Total size of chunks for each Env_Config.bitrate
         
     def encoding_update(self, starting_time, end_time):
         temp_time = starting_time
@@ -82,16 +70,16 @@ class Live_Server(object):
 
     # chunk size for next/current segment
     def generate_chunk_size(self):
-        self.current_seg_size = [[] for i in range(len(BITRATE))]
-        # Initial coef, all bitrate share the same coef 
-        encoding_coef = np.random.uniform(BITRATE_LOW_NOISE, BITRATE_HIGH_NOISE)
-        estimate_seg_size = [x * encoding_coef for x in BITRATE]
-        # There is still noise for prediction, all bitrate cannot share the coef exactly same
-        seg_size = [np.random.uniform(EST_LOW_NOISE*x, EST_HIGH_NOISE*x) for x in estimate_seg_size]
+        self.current_seg_size = [[] for i in range(len(Env_Config.bitrate))]
+        # Initial coef, all Env_Config.bitrate share the same coef 
+        encoding_coef = np.random.uniform(Env_Config.bitrate_low_noise, Env_Config.bitrate_high_noise)
+        estimate_seg_size = [x * encoding_coef for x in Env_Config.bitrate]
+        # There is still noise for prediction, all Env_Config.bitrate cannot share the coef exactly same
+        seg_size = [np.random.uniform(Env_Config.est_low_noise*x, Env_Config.est_high_noise*x) for x in estimate_seg_size]
         if self.chunk_in_seg == 2:
         # Distribute size for chunks, currently, it should depend on chunk duration (200 or 500)
-            ratio = np.random.uniform(RATIO_LOW_2, RATIO_HIGH_2)
-            seg_ratio = [np.random.uniform(EST_LOW_NOISE*ratio, EST_HIGH_NOISE*ratio) for x in range(len(BITRATE))]
+            ratio = np.random.uniform(Env_Config.ratio_low_2, Env_Config.ratio_high_2)
+            seg_ratio = [np.random.uniform(Env_Config.est_low_noise*ratio, Env_Config.est_high_noise*ratio) for x in range(len(Env_Config.bitrate))]
             for i in range(len(seg_ratio)):
                 temp_ratio = seg_ratio[i]
                 temp_aux_chunk_size = seg_size[i]/(1+temp_ratio)
@@ -100,8 +88,8 @@ class Live_Server(object):
         # if 200ms, needs to be modified, not working
         elif self.chunk_in_seg == 5:
             # assert 1 == 0
-            ratio = np.random.uniform(RATIO_LOW_5, RATIO_HIGH_5)
-            seg_ratio = [np.random.uniform(EST_LOW_NOISE*ratio, EST_HIGH_NOISE*ratio) for x in range(len(BITRATE))]
+            ratio = np.random.uniform(Env_Config.ratio_low_5, Env_Config.ratio_high_5)
+            seg_ratio = [np.random.uniform(Env_Config.est_low_noise*ratio, Env_Config.est_high_noise*ratio) for x in range(len(Env_Config.bitrate))]
             for i in range(len(seg_ratio)):
                 temp_ratio = seg_ratio[i]
                 temp_ini_chunk_size = seg_size[i] * temp_ratio / (1 + temp_ratio)
@@ -124,7 +112,7 @@ class Live_Server(object):
         self.current_seg_idx = -1
         self.current_chunk_idx = 0
         self.chunks = []    # 1 for initial chunk, 0 for following chunks
-        self.current_seg_size = [[] for i in range(len(BITRATE))]
+        self.current_seg_size = [[] for i in range(len(Env_Config.bitrate))]
         self.encoding_update(0.0, self.time)
         del self.next_delivery[:]
         

@@ -1,18 +1,6 @@
 import numpy as np
 from config import Env_Config, Config
-
-BITRATE = [300.0, 500.0, 1000.0, 2000.0, 3000.0, 6000.0]
-# BITRATE = [500.0, 2000.0, 5000.0, 8000.0, 16000.0]    # 5 actions
-PACKET_PAYLOAD_PORTION = 0.973  # 1460/1500
-
-RTT_LOW = 30.0
-RTT_HIGH = 40.0 
-CHUNK_RANDOM_RATIO_LOW = 0.95
-CHUNK_RANDOM_RATIO_HIGH = 1.05
-
-MS_IN_S = 1000.0    # in ms
-KB_IN_MB = 1000.0   # in ms
-
+ 
 class Live_Player(object):
     def __init__(self, throughput_trace, time_trace, trace_name, random_seed=Config.random_seed):
         np.random.seed(random_seed)
@@ -22,7 +10,7 @@ class Live_Player(object):
 
         self.playing_time = 0.0
         self.time_idx = np.random.randint(1,len(self.time_trace))
-        self.last_trace_time = self.time_trace[self.time_idx-1] * MS_IN_S   # in ms
+        self.last_trace_time = self.time_trace[self.time_idx-1] * Env_Config.ms_in_s   # in ms
 
         self.seg_duration = Env_Config.seg_duration
         self.chunk_duration = Env_Config.chunk_duration
@@ -39,7 +27,7 @@ class Live_Player(object):
         chunk_size = next_chunk_set[quality] # in Kbits not KBytes
         chunk_start_time = seg_idx * self.seg_duration + chunk_idx * self.chunk_duration
         # as mpd is based on prediction, there is noise
-        chunk_size = np.random.uniform(CHUNK_RANDOM_RATIO_LOW*chunk_size, CHUNK_RANDOM_RATIO_HIGH*chunk_size)
+        chunk_size = np.random.uniform(Env_Config.chunk_random_ratio_low*chunk_size, Env_Config.chunk_random_ratio_high*chunk_size)
         chunk_sent = 0.0    # in Kbits
         downloading_fraction = 0.0  # in ms
         freezing_fraction = 0.0 # in ms
@@ -47,22 +35,22 @@ class Live_Player(object):
         rtt = 0.0
         # Handle RTT 
         if take_action:
-            rtt = np.random.uniform(RTT_LOW, RTT_HIGH)  # in ms
-            duration = self.time_trace[self.time_idx] * MS_IN_S - self.last_trace_time  # in ms
+            rtt = np.random.uniform(Env_Config.rtt_low, Env_Config.rtt_high)  # in ms
+            duration = self.time_trace[self.time_idx] * Env_Config.ms_in_s - self.last_trace_time  # in ms
             if duration > rtt:
                 self.last_trace_time += rtt
             else:
                 temp_rtt = rtt
                 while duration < temp_rtt:
-                    self.last_trace_time = self.time_trace[self.time_idx] * MS_IN_S
+                    self.last_trace_time = self.time_trace[self.time_idx] * Env_Config.ms_in_s
                     self.time_idx += 1
                     if self.time_idx >= len(self.time_trace):
                         self.time_idx = 1
                         self.last_trace_time = 0.0
                     temp_rtt -= duration
-                    duration = self.time_trace[self.time_idx] * MS_IN_S - self.last_trace_time
+                    duration = self.time_trace[self.time_idx] * Env_Config.ms_in_s - self.last_trace_time
                 self.last_trace_time += temp_rtt
-                assert self.last_trace_time < self.time_trace[self.time_idx] * MS_IN_S
+                assert self.last_trace_time < self.time_trace[self.time_idx] * Env_Config.ms_in_s
             downloading_fraction += rtt
             # assert self.state == 1 or self.state == 0
             # Check whether during startup
@@ -80,11 +68,11 @@ class Live_Player(object):
         # Chunk downloading
         while True:
             throughput = self.throughput_trace[self.time_idx]   # in Mbps or Kbpms
-            duration = self.time_trace[self.time_idx] * MS_IN_S - self.last_trace_time      # in ms
-            deliverable_size = throughput * duration * PACKET_PAYLOAD_PORTION   # in Kbits      
+            duration = self.time_trace[self.time_idx] * Env_Config.ms_in_s - self.last_trace_time      # in ms
+            deliverable_size = throughput * duration * Env_Config.packet_payload_portion   # in Kbits      
             # Will also check whether freezing time exceeds the TOL
             if deliverable_size + chunk_sent > chunk_size:
-                fraction = (chunk_size - chunk_sent) / (throughput * PACKET_PAYLOAD_PORTION)    # in ms, real time
+                fraction = (chunk_size - chunk_sent) / (throughput * Env_Config.packet_payload_portion)    # in ms, real time
                 if self.state == 1:
                     assert freezing_fraction == 0.0
                     temp_freezing = np.maximum(fraction - self.buffer/playing_speed, 0.0)       # modified based on playing speed
@@ -94,7 +82,7 @@ class Live_Player(object):
                         self.last_trace_time += self.buffer/playing_speed + self.freezing_tol
                         downloading_fraction += self.buffer/playing_speed + self.freezing_tol
                         self.playing_time += self.buffer
-                        chunk_sent += (self.freezing_tol + self.buffer/playing_speed) * throughput * PACKET_PAYLOAD_PORTION   # in Kbits  
+                        chunk_sent += (self.freezing_tol + self.buffer/playing_speed) * throughput * Env_Config.packet_payload_portion   # in Kbits  
                         self.state = 0
                         self.buffer = 0.0
                         assert chunk_sent < chunk_size
@@ -119,7 +107,7 @@ class Live_Player(object):
                         time_out = 1
                         self.last_trace_time += self.freezing_tol - freezing_fraction
                         downloading_fraction += self.freezing_tol - freezing_fraction
-                        chunk_sent += (self.freezing_tol - freezing_fraction) * throughput * PACKET_PAYLOAD_PORTION # in Kbits
+                        chunk_sent += (self.freezing_tol - freezing_fraction) * throughput * Env_Config.packet_payload_portion # in Kbits
                         freezing_fraction = self.freezing_tol
                         self.state = 0
                         assert chunk_sent < chunk_size
@@ -163,12 +151,12 @@ class Live_Player(object):
                     self.buffer = 0.0
                     # exceed TOL, enter startup, freezing time equals TOL
                     self.state = 0
-                    chunk_sent += (self.freezing_tol + self.buffer/playing_speed) * throughput * PACKET_PAYLOAD_PORTION   # in Kbits
+                    chunk_sent += (self.freezing_tol + self.buffer/playing_speed) * throughput * Env_Config.packet_payload_portion   # in Kbits
                     assert chunk_sent < chunk_size
                     return chunk_sent, downloading_fraction, freezing_fraction, time_out, start_state, rtt
-                chunk_sent += duration * throughput * PACKET_PAYLOAD_PORTION    # in Kbits
+                chunk_sent += duration * throughput * Env_Config.packet_payload_portion    # in Kbits
                 downloading_fraction += duration    # in ms
-                self.last_trace_time = self.time_trace[self.time_idx] * MS_IN_S # in ms
+                self.last_trace_time = self.time_trace[self.time_idx] * Env_Config.ms_in_s # in ms
                 self.time_idx += 1
                 if self.time_idx >= len(self.time_trace):
                     self.time_idx = 1
@@ -188,16 +176,16 @@ class Live_Player(object):
                     self.last_trace_time += self.freezing_tol - freezing_fraction   # in ms
                     self.state = 0
                     downloading_fraction += self.freezing_tol - freezing_fraction
-                    chunk_sent += (self.freezing_tol - freezing_fraction) * throughput * PACKET_PAYLOAD_PORTION # in Kbits
+                    chunk_sent += (self.freezing_tol - freezing_fraction) * throughput * Env_Config.packet_payload_portion # in Kbits
                     freezing_fraction = self.freezing_tol
                     # Download is not finished, chunk_size is not the entire chunk
                     assert chunk_sent < chunk_size
                     return chunk_sent, downloading_fraction, freezing_fraction, time_out, start_state, rtt
 
                 freezing_fraction += duration   # in ms
-                chunk_sent += duration * throughput * PACKET_PAYLOAD_PORTION    # in kbits
+                chunk_sent += duration * throughput * Env_Config.packet_payload_portion    # in kbits
                 downloading_fraction += duration    # in ms
-                self.last_trace_time = self.time_trace[self.time_idx] * MS_IN_S # in ms
+                self.last_trace_time = self.time_trace[self.time_idx] * Env_Config.ms_in_s # in ms
                 self.time_idx += 1
                 if self.time_idx >= len(self.time_trace):
                     self.time_idx = 1
@@ -205,9 +193,9 @@ class Live_Player(object):
             # Startup
             else:
                 assert self.buffer < self.start_up_ssh
-                chunk_sent += duration * throughput * PACKET_PAYLOAD_PORTION
+                chunk_sent += duration * throughput * Env_Config.packet_payload_portion
                 downloading_fraction += duration
-                self.last_trace_time = self.time_trace[self.time_idx] * MS_IN_S # in ms
+                self.last_trace_time = self.time_trace[self.time_idx] * Env_Config.ms_in_s # in ms
                 self.time_idx += 1
                 if self.time_idx >= len(self.time_trace):
                     self.time_idx = 1
@@ -259,7 +247,7 @@ class Live_Player(object):
         self.buffer = np.maximum(0.0, self.buffer - wait_time * playing_speed)
         past_wait_time = 0.0    # in ms
         while  True:
-            duration = self.time_trace[self.time_idx] * MS_IN_S - self.last_trace_time
+            duration = self.time_trace[self.time_idx] * Env_Config.ms_in_s - self.last_trace_time
             if past_wait_time + duration > wait_time:
                 self.last_trace_time += wait_time - past_wait_time
                 break
@@ -288,7 +276,7 @@ class Live_Player(object):
         self.trace_name = trace_name
 
         self.time_idx = np.random.randint(1,len(self.time_trace))
-        self.last_trace_time = self.time_trace[self.time_idx-1] * MS_IN_S # in ms
+        self.last_trace_time = self.time_trace[self.time_idx-1] * Env_Config.ms_in_s # in ms
         self.buffer = 0.0   # ms
         self.state = 0  # 0: start up.  1: traceing. 2: rebuffering
 
