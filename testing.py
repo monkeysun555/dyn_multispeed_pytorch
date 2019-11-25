@@ -24,7 +24,7 @@ def parse_args():
 args = parse_args() 
 
 def main():
-    np.random.seed(Config.randomSeed)
+    np.random.seed(Config.random_seed)
     massive = args.massive
     model_e = args.episode
     model_v = args.version
