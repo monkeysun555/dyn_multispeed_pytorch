@@ -1,5 +1,5 @@
 import numpy as np
-from config import Env_Config
+from config import Env_Config, Config
 
 SEG_DURATION = 1000.0
 CHUNK_DURATION = 200.0

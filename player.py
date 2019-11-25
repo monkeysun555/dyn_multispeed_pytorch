@@ -1,7 +1,6 @@
 import numpy as np
-from config import Env_Config
+from config import Env_Config, Config
 
-RANDOM_SEED = 13
 BITRATE = [300.0, 500.0, 1000.0, 2000.0, 3000.0, 6000.0]
 # BITRATE = [500.0, 2000.0, 5000.0, 8000.0, 16000.0]    # 5 actions
 PACKET_PAYLOAD_PORTION = 0.973  # 1460/1500
