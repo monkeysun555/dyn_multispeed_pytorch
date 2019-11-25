@@ -25,7 +25,7 @@ class Live_Streaming(object):
             self.time_traces, self.throughput_traces, self.name_traces = load_bandwidth()
             self.trace_idx = np.random.randint(len(self.throughput_traces))
         # Initial server and player
-        self.player = Live_Player(self.throughput_traces[self.trace_idx], self.time_traces[self.trace_idx], self.name_traces[self.trace_idx], randomSeed=RANDOM_SEED)
+        self.player = Live_Player(self.throughput_traces[self.trace_idx], self.time_traces[self.trace_idx], self.name_traces[self.trace_idx])
         self.server = Live_Server()
         self.init_buffer = self.server.get_time()
 
