@@ -72,7 +72,7 @@ def main():
                     total_reward += reward            
             print('File: ', trace_name, ' reward is: ', total_reward) 
             # Get initial latency of player and how long time is used. and tp/time trace
-            testing_duration = env.server.get_time() - testing_start_time
+            testing_duration = env.get_server_time() - testing_start_time
             tp_record, time_record = get_tp_time_trace_info(tp_trace, time_trace, starting_idx, testing_duration + env.player.get_buffer())
             log_file.write('\t'.join(str(tp) for tp in tp_record))
             log_file.write('\n')

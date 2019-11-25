@@ -301,3 +301,6 @@ class Live_Player(object):
     def get_buffer(self):
         return self.buffer
 
+    def get_freezing_tol(self):
+        return self.freezing_tol
+

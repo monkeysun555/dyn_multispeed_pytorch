@@ -8,9 +8,6 @@ from player import *
 from server import *
 from utils import load_bandwidth, load_single_trace
 
-BIT_RATES = [300.0, 500.0, 1000.0, 2000.0, 3000.0, 6000.0]
-SPEEDS = [-100.0, 0.75, 0.90, 1.0, 1.10, 1.25, 100.0]
-
 class Live_Streaming(object):
     def __init__(self, testing=False, massive=False, random_seed=Config.random_seed):
         np.random.seed(random_seed)
@@ -27,11 +24,11 @@ class Live_Streaming(object):
         # Initial server and player
         self.player = Live_Player(self.throughput_traces[self.trace_idx], self.time_traces[self.trace_idx], self.name_traces[self.trace_idx])
         self.server = Live_Server()
-        self.init_buffer = self.server.get_time()
-
+        self.buffer_ub = Env_Config.buffer_ub
+        self.freezing_ub = self.player.get_freezing_tol()
         # Initial environment variables
-        self.bitrates = BIT_RATES
-        self.speeds = SPEEDS
+        self.bitrates = Env_Config.bitrate
+        self.speeds = Env_Config.speeds
         self.pre_action_1 = Env_Config.default_action_1
         self.pre_action_2 = Env_Config.default_action_2
 
@@ -212,18 +209,18 @@ class Live_Streaming(object):
     def normal(self, state):
         state[0, -1] = state[0, -1]/(self.bitrates[-1]/Env_Config.chunk_in_seg)
         state[1, -1] = state[1, -1]/Env_Config.ms_in_s
-        state[2, -1] = state[2, -1]/self.init_buffer
+        state[2, -1] = state[2, -1]/self.buffer_ub
         state[3, -1] = state[3, -1]/Env_Config.chunk_duration
-        state[4, -1] = state[4, -1]/Env_Config.ms_in_s
+        state[4, -1] = state[4, -1]/self.freezing_ub
         state[5, -1] = state[5, -1]/(np.log(self.bitrates[-1]/self.bitrates[0]))
-        state[6, -1] = state[6, -1]/self.init_buffer
+        state[6, -1] = state[6, -1]/self.buffer_ub
         state[7, -1] = state[7, -1]/2.0
         state[8, -1] = state[8, -1]/2.0
         state[9, -1] = state[9, -1]/self.speeds[-2]
         return state
 
     def get_server_time(self):
-        return self.init_buffer
+        return self.server.get_time()
 
     def get_player_trace_info(self):
         return self.player.get_tp_trace(), self.player.get_time_trace(), self.player.get_trace_name(), self.player.get_time_idx()

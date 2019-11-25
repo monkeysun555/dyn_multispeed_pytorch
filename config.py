@@ -43,6 +43,7 @@ class Env_Config(object):
     chunk_random_ratio_high = 1.05
 
     bitrate = [300.0, 500.0, 1000.0, 2000.0, 3000.0, 6000.0]
+    speeds = [-100.0, 0.75, 0.90, 1.0, 1.10, 1.25, 100.0]
     ms_in_s = 1000.0
     kb_in_mb = 1000.0   # in ms
     seg_duration = 1000.0
@@ -53,7 +54,8 @@ class Env_Config(object):
     server_init_lat_high = 10
     start_up_ssh = 2000.0
     freezing_tol = 3000.0 
-
+    buffer_ub = server_init_lat_high*seg_duration
+    
     default_action_1 = 0
     default_action_2 = 3
     skip_segs = 3.0
