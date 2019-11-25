@@ -1,5 +1,4 @@
 import os 
-import random
 import numpy as np
 import argparse
 import torch
@@ -24,7 +23,6 @@ def parse_args():
 args = parse_args() 
 
 def main():
-    np.random.seed(Config.random_seed)
     massive = args.massive
     model_e = args.episode
     model_v = args.version

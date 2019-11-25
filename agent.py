@@ -10,7 +10,8 @@ from config import Config
 from models import Model
 
 class Agent:
-    def __init__(self, action_dims):
+    def __init__(self, action_dims, random_seed=Config.random_seed):
+        np.random.seed(random_seed)
         # self.action_num = action_num
         self.action_dims = action_dims
         self.epsilon = Config.initial_epsilon

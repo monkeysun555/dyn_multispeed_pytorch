@@ -12,8 +12,8 @@ BIT_RATES = [300.0, 500.0, 1000.0, 2000.0, 3000.0, 6000.0]
 SPEEDS = [-100.0, 0.75, 0.90, 1.0, 1.10, 1.25, 100.0]
 
 class Live_Streaming(object):
-    def __init__(self, testing=False, massive=False):
-        np.random.seed(Config.random_seed)
+    def __init__(self, testing=False, massive=False, random_seed=Config.random_seed):
+        np.random.seed(random_seed)
         if testing:
             self.time_traces, self.throughput_traces, self.name_traces = load_bandwidth()
             if massive: 
