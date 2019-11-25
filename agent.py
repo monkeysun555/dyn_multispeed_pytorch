@@ -10,7 +10,7 @@ from config import Config
 from models import Model
 
 class Agent:
-    def __init__(self, action_dims, random_seed=Config.random_seed):
+    def __init__(self, action_dims, model_version=Config.model_version, random_seed=Config.random_seed):
         np.random.seed(random_seed)
         # self.action_num = action_num
         self.action_dims = action_dims
@@ -18,13 +18,14 @@ class Agent:
         self.epsilon_final = Config.epsilon_final
         self.epsilon_start = Config.epsilon_start
         self.epsilon_decay = Config.epsilon_decay
+        self.model_version = model_version
         self.build_network()
 
     def build_network(self):
-        self.Q_network = Model(self.action_dims).cuda()
-        self.target_network = Model(self.action_dims).cuda()
+        self.Q_network = Model(self.action_dims, self.model_version).cuda()
+        self.target_network = Model(self.action_dims, self.model_version).cuda()
         # Change learning rate for commen net !!!! Start from here
-        if Config.model_version == 0:
+        if self.model_version == 0:
             self.optimizers = [optim.Adam([
                 {'params': self.Q_network.multi_output_1.parameters(), 'lr':Config.lr},
                 {'params': self.Q_network.fc2.parameters()},
@@ -37,7 +38,7 @@ class Agent:
                 {'params': self.Q_network.fc1.parameters()},
                 {'params': self.Q_network.lstm1.parameters()},
                 ], lr=0.5*Config.lr)]
-        elif Config.model_version == 1:
+        elif self.model_version == 1:
             self.optimizers = optim.Adam(self.Q_network.parameters(), lr=Config.lr)
     
     def update_target_network(self):
@@ -135,14 +136,14 @@ class Agent:
         state = torch.from_numpy(state).float()
         state = Variable(state).cuda()
         self.Q_network.eval()
-        if Config.model_version == 0:
+        if self.model_version == 0:
             estimate = [torch.max(q_value, 1)[1].data[0] for q_value in self.Q_network.forward(state)] 
             # with epsilon prob to choose random action else choose argmax Q estimate action
             if np.random.random() < self.epsilon:
                 return [np.random.randint(0, self.action_dims[action_idx]-1) for action_idx in range(len(self.action_dims))]
             else:
                 return estimate
-        elif Config.model_version == 1:
+        elif self.model_version == 1:
             estimate = torch.max(self.Q_network.forward(state), 1)[1].data[0]
             if np.random.random() < self.epsilon:
                 return np.random.randint(0, self.action_dims[0]*self.action_dims[1]-1)
@@ -164,10 +165,10 @@ class Agent:
         self.Q_network.save(logs_path, step=step, optimizers=self.optimizers)
         print('=> Save {}' .format(logs_path)) 
     
-    def restore(self, logs_path, version=Config.model_version):
-        if Config.model_version == 0:
-            self.Q_network.load(logs_path, self.optimizers, version)
-            self.target_network.load(logs_path, self.optimizers, version)
+    def restore(self, logs_path):
+        if self.model_version == 0:
+            self.Q_network.load(logs_path, self.optimizers)
+            self.target_network.load(logs_path, self.optimizers)
             print('=> Restore {}' .format(logs_path)) 
             # self.optimizers = [optim.Adam([
             #     {'params': self.Q_network.multi_output_1.parameters(), 'lr':Config.lr},
@@ -181,8 +182,8 @@ class Agent:
             #     {'params': self.Q_network.fc1.parameters()},
             #     {'params': self.Q_network.lstm1.parameters()},
             #     ], lr=0.5*Config.lr)]
-        elif Config.model_version == 1:
-            self.Q_network.load(logs_path, self.optimizers, version)
-            self.target_network.load(logs_path, self.optimizers, version)
+        elif self.model_version == 1:
+            self.Q_network.load(logs_path, self.optimizers)
+            self.target_network.load(logs_path, self.optimizers)
             print('=> Restore {}' .format(logs_path))
 

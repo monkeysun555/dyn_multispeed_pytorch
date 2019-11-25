@@ -34,10 +34,10 @@ def main():
     env = Env.Live_Streaming(testing=True, massive=massive)
     _, action_dims = env.get_action_info()
     # reply_buffer = Reply_Buffer(Config.reply_buffer_size)
-    agent = Agent(action_dims)
+    agent = Agent(action_dims, model_v)
     agent.set_epsilon_for_testing()
     model_path = './logs_' +str(model_v) + '/model-' + model_e + '.pth' 
-    agent.restore(model_path, model_v)
+    agent.restore(model_path)
 
     if massive:
         while True:
@@ -46,6 +46,7 @@ def main():
             if env_end:
                 break
             testing_start_time = env.get_server_time()
+            print("Initial latency is: ", testing_start_time)
             tp_trace, time_trace, trace_name, starting_idx = env.get_player_trace_info()
             log_path = Config.massive_result_files + trace_name 
             log_file = open(log_path, 'w')
