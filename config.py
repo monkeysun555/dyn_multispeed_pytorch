@@ -21,7 +21,7 @@ class Config(object):
     update_target_frequency = 50
     show_loss_frequency = 1000
     maximum_model = 5
-    random_seed = 10
+    random_seed = 11
     massive_result_files = './all_results'
     trace_idx = 2
 
