@@ -43,7 +43,7 @@ def main():
         # Update epsilon
         agent.update_epsilon_by_epoch(episode)
         while not env.streaming_finish():
-            if Config.model_version == 0:
+            if Config.model_version == 0 or Config.model_version == 2:
                 action_1, action_2 = agent.take_action(np.array([state]))
                 # print(action_1, action_2)
                 reward = env.act(action_1, action_2)
@@ -70,7 +70,7 @@ def main():
                 action_onehot[action] = 1
                 # print(env.streaming_finish())
                 reply_buffer.append((state, action_onehot, reward, state_new, env.streaming_finish()))
-                state = state_new
+                state = state_new                
 
         # sample batch from reply buffer
         if episode < Config.observe_episode:
@@ -82,13 +82,16 @@ def main():
 
         if Config.model_version == 0:
             batch_state, batch_actions_1, batch_actions_2, batch_reward, batch_state_new, batch_over = reply_buffer.sample()
-            # update policy network
             loss = agent.update_Q_network_v0(batch_state, batch_actions_1, batch_actions_2, batch_reward, batch_state_new, batch_over)
 
         elif Config.model_version == 1:
             batch_state, batch_actions, batch_reward, batch_state_new, batch_over = reply_buffer.sample()
             loss = agent.update_Q_network_v1(batch_state, batch_actions, batch_reward, batch_state_new, batch_over)
         
+        elif Config.model_version == 2:
+            batch_state, batch_actions_1, batch_actions_2, batch_reward, batch_state_new, batch_over = reply_buffer.sample()
+            loss = agent.update_Q_network_v2(batch_state, batch_actions_1, batch_actions_2, batch_reward, batch_state_new, batch_over)
+
         loss_logs.extend([[episode, loss]])
         reward_logs.extend([[episode, total_reward]])
 

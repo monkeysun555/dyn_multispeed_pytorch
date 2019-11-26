@@ -61,9 +61,8 @@ class Agent:
         self.target_network.eval()
         
         # use current network to evaluate action argmax_a' Q_current(s', a')_
-        # actions_new = self.Q_network.forward(state_new).max(dim=2)[1].cpu().data.view(-1, 1)        # To be modified
-        # actions_new = self.Q_network.forward(state_new).max(dim=2)[1].cpu().data.view(-1, 1)        # To be modified
-        actions_new = [torch.max(q_value, 1)[1].cpu().data.view(-1, 1) for q_value in self.Q_network.forward(state_new)] 
+        new_q_values = self.Q_network.forward(state_new)
+        actions_new = [torch.max(q_value, 1)[1].cpu().data.view(-1, 1) for q_value in new_q_values] 
         actions_new_onehot = [torch.zeros(Config.sampling_batch_size, action_dim) for action_dim in self.action_dims]
         actions_new_onehot = [Variable(actions_new_onehot[action_idx].scatter_(1, actions_new[action_idx], 1.0)).cuda() for action_idx in range(len(self.action_dims))]
         
@@ -110,8 +109,6 @@ class Agent:
         self.target_network.eval()
         
         # use current network to evaluate action argmax_a' Q_current(s', a')_
-        # actions_new = self.Q_network.forward(state_new).max(dim=2)[1].cpu().data.view(-1, 1)        # To be modified
-        # actions_new = self.Q_network.forward(state_new).max(dim=2)[1].cpu().data.view(-1, 1)        # To be modified
         actions_new = self.Q_network.forward(state_new).max(dim=1)[1].cpu().data.view(-1, 1)
         actions_new_onehot = torch.zeros(Config.sampling_batch_size, self.action_dims[0]*self.action_dims[1]) 
         actions_new_onehot = Variable(actions_new_onehot.scatter_(1, actions_new, 1.0)).cuda()
@@ -131,12 +128,74 @@ class Agent:
         losses.append(loss.item())
         return losses
 
+    def update_Q_network_v2(self, state, action_1, action_2, reward, state_new, terminal):
+        state = torch.from_numpy(state).float()
+        action_1 = torch.from_numpy(action_1).float()
+        action_2 = torch.from_numpy(action_2).float()
+        state_new = torch.from_numpy(state_new).float()
+        terminal = torch.from_numpy(terminal).float()
+        reward = torch.from_numpy(reward).float()
+        state = Variable(state).cuda()
+        action_1 = Variable(action_1).cuda()                 
+        action_2 = Variable(action_2).cuda()
+        state_new = Variable(state_new).cuda()
+        terminal = Variable(terminal).cuda()
+        reward = Variable(reward).cuda()
+        self.Q_network.eval()
+        self.target_network.eval()
+        
+        # use current network to evaluate action argmax_a' Q_current(s', a')_
+        new_q_values = self.Q_network.forward(state_new)   
+        actions_new = [torch.max(q_value, 1)[1].cpu().data.view(-1, 1) for q_value in new_q_values[]] 
+        actions_new_onehot = [torch.zeros(Config.sampling_batch_size, action_dim) for action_dim in self.action_dims]
+        actions_new_onehot = [Variable(actions_new_onehot[action_idx].scatter_(1, actions_new[action_idx], 1.0)).cuda() for action_idx in range(len(self.action_dims))]
+
+
+        pre_y = self.target_network.forward(state_new)
+        if Config.target_version == 0:
+            y = []
+            for new_q_idx in range(len(pre_y[:2])):
+                y.append(reward + torch.mul(((pre_y[new_q_idx]*actions_new_onehot[new_q_idx]).sum(dim=1)*terminal),Config.discount_factor))
+
+        elif Config.target_version == 1:
+            pass
+
+        
+        # Different loss and object
+        # use target network to evaluate value y = r + discount_factor * Q_tar(s', a')
+        
+        actions = [action_1, action_2]
+        pre_y = self.target_network.forward(state_new)
+        y = []
+        for new_q_idx in range(len(pre_y)):
+            y.append(reward + torch.mul(((pre_y[new_q_idx]*actions_new_onehot[new_q_idx]).sum(dim=1)*terminal),Config.discount_factor))
+        self.Q_network.train()
+        pre_Q = self.Q_network.forward(state)
+        Q = []
+        for q_idx in range(len(pre_Q)):
+            Q.append((pre_Q[q_idx]*actions[q_idx]).sum(dim=1))
+        losses = []
+        for action_idx in range(len(self.action_dims)):
+            # y = reward + torch.mul(((self.target_network.forward(state_new)[action_idx]*actions_new_onehot[action_idx]).sum(dim=1)*terminal), Config.discount_factor)
+            # Q = (self.Q_network.forward(state)[action_idx]*actions[action_idx]).sum(dim=1)
+            loss = mse_loss(input=Q[action_idx], target=y[action_idx].detach())
+            self.optimizers[action_idx].zero_grad()
+            if action_idx < len(self.action_dims)-1:
+                loss.backward(retain_graph=True)
+            else:
+                loss.backward()
+            self.optimizers[action_idx].step()
+            losses.append(loss.item())
+        # print(losses)
+        return losses
+
     def take_action(self, state):
         state = torch.from_numpy(state).float()
         state = Variable(state).cuda()
         self.Q_network.eval()
-        if self.model_version == 0:
-            estimate = [torch.max(q_value, 1)[1].data[0] for q_value in self.Q_network.forward(state)] 
+        if self.model_version == 0 or self.model_version == 2:
+            output = self.Q_network.forward(state)
+            estimate = [torch.max(q_value, 1)[1].data[0] for q_value in output] 
             # with epsilon prob to choose random action else choose argmax Q estimate action
             if np.random.random() < self.epsilon:
                 return [np.random.randint(0, self.action_dims[action_idx]-1) for action_idx in range(len(self.action_dims))]

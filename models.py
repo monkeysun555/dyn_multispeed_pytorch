@@ -3,10 +3,11 @@ import torch.nn as nn
 from config import Config
 
 class Model(nn.Module):
-    def __init__(self, action_dims, model_version):
+    def __init__(self, action_dims, model_version, q_version):
         super().__init__()
         self.model_version = model_version
-        if self.model_version == 0:
+        self.q_version = q_version
+        if self.model_version == 0 or self.model_version == 2:
             self.lstm1 = nn.LSTM(input_size=5, hidden_size=32, num_layers=2, dropout=0.1, batch_first=True, bidirectional=True)
 
             self.fc1 = nn.Sequential(
@@ -20,9 +21,10 @@ class Model(nn.Module):
             # print(action_dims)
             self.multi_output_1 = nn.Linear(in_features=128, out_features=action_dims[0]) 
             self.multi_output_2 = nn.Linear(in_features=128, out_features=action_dims[1]) 
-            # self.dueling = nn.Sequential(
-            #     nn.Linear(in_features=512, out_channels=1),
-            #     nn.ReLU())
+            
+            if self.model_version == 2:
+                self.dueling = nn.Linear(in_features=128, out_channels=1)
+
         elif self.model_version == 1:
             self.lstm1 = nn.LSTM(input_size=5, hidden_size=32, num_layers=2, dropout=0.1, batch_first=True, bidirectional=True)
             self.fc1 = nn.Sequential(
@@ -32,6 +34,7 @@ class Model(nn.Module):
                 nn.Linear(in_features=992, out_features=128),
                 nn.ReLU())
             self.output = nn.Linear(in_features=128, out_features=action_dims[0]*action_dims[1])
+
 
     def forward(self, observation):
         # Shape of observation: (batch, 15, 10) (batch, seq, input_size)
@@ -49,6 +52,18 @@ class Model(nn.Module):
             fc2_out = self.fc2(torch.cat((torch.flatten(lstm1_out, start_dim=1), fc1_out), 1))                      # flatten: (1,15,2*32) to (1,-1) and cat with (1,32)
             advantage = self.output(fc2_out)
             return advantage
+        elif self.model_version == 2:
+            lstm1_out, (hn, cn) = self.lstm1(torch.transpose(observation[:, 0:5,:], 1, 2), (h0,c0))         # input: (5, 15) to (1,15,5) , output: (1,15, 2*32)
+            fc1_out = self.fc1(observation[:, 5:, -1])                                                     # input: (1,5) output: (1, 32)
+            fc2_out = self.fc2(torch.cat((torch.flatten(lstm1_out, start_dim=1), fc1_out), 1))                      # flatten: (1,15,2*32) to (1,-1) and cat with (1,32)
+            if self.q_version == 0:
+                # Q = V + A
+                advantages=[self.multi_output_1(fc2_out)+self.dueling(fc2_out), self.multi_output_2(fc2_out)+self.dueling(fc2_out)]
+            elif self.q_version == 1:
+                # Q = V + (A-max(A))
+                advantages=[self.multi_output_1(fc2_out)+self.dueling(fc2_out), self.multi_output_2(fc2_out)+self.dueling(fc2_out)]
+                print(advantages)
+            return advantages
 
     def save(self, path, step, optimizers):
         if self.model_version == 0:

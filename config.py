@@ -1,6 +1,8 @@
 # Configuration for all files
 class Config(object):
-    model_version = 1           #v0: two outputs,   v1: one (6*7) output
+    model_version = 2           #v0: two outputs,   v1: one (6*7) output  v2: dueling ddqn
+    target_version = 0          #v0: naive Qd = V + Ad , dueling or not    v1: Qd = V + (Ad - ave(Ad)), must dueling.  v2: Qd = V + (Ad - max(Ad)), must dueling
+    q_version = 1            #v0: indep: yd = r + Qd_(sd', argmax Qd(sd',ad')), multiple optimizers  v1: global y = r + max Qd_(sd', argmax Qd(sd',ad')) one optimize v2: global y = r + ave( Qd_(sd', argmax Qd(sd',ad')))), one optimizer
     initial_epsilon = 1.0 
     epsilon_start = 1.0
     epsilon_final = 0.0001
