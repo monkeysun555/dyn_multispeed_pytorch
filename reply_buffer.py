@@ -15,7 +15,7 @@ class Reply_Buffer:
         self.buffer.append(item)
 
     def sample(self, batch_size=Config.sampling_batch_size):
-        if Config.model_version == 0:
+        if Config.model_version == 1 or Config.model_version == 2:
             batch = random.sample(self.buffer, batch_size)
             batch_state, batch_action_1, batch_action_2, batch_reward, batch_state_new, batch_over = [], [], [], [], [], []
             for b in batch:
@@ -33,7 +33,7 @@ class Reply_Buffer:
             batch_state_new = np.stack(batch_state_new)
             batch_over = np.stack(batch_over)
             return batch_state, batch_action_1, batch_action_2, batch_reward, batch_state_new, batch_over
-        elif Config.model_version == 1:
+        elif Config.model_version == 0:
             batch = random.sample(self.buffer, batch_size)
             batch_state, batch_action, batch_reward, batch_state_new, batch_over = [], [], [], [], []
             for b in batch:
