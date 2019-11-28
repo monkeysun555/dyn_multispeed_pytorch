@@ -29,6 +29,9 @@ def main():
     reward_logs = []
     loss_logs = []
 
+    logs_path = Config.logs_path + '/'
+    if not os.path.exists(logs_path):
+         os.makedirs(logs_path) 
     # restore model
     # if restore:
     #    agent.restore(restore)
@@ -79,7 +82,6 @@ def main():
         # update target network
         if episode % Config.update_target_frequency == 0:
             agent.update_target_network()
-
 
         if Config.model_version == 0:
             batch_state, batch_actions, batch_reward, batch_state_new, batch_over = reply_buffer.sample()
