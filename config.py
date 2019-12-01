@@ -4,9 +4,9 @@ class Config(object):
     # there are 3 model versions,3 q_versions (1 local, 2 global) and 4 target vesions() 
     # For model v0 and v1, there is no difference for q_version and target and loss, if want to add, please modify q_update_v0/v1
     # For model v2(dueling), 3 q_versions and 3 target (1 indep, and 2 global)
-    model_version = 1           #v0: single(6*7),   v1: two output  v2: dueling ddqn
-    q_version = 0               #v0: indep: yd = r + Qd_(sd', argmax Qd(sd',ad')), multiple optimizers  v1: global y = r + max Qd_(sd', argmax Qd(sd',ad')) one optimize v2: global y = r + ave( Qd_(sd', argmax Qd(sd',ad')))), one optimizer
-    target_version = 0          #v0: naive Qd = V + Ad , dueling or not    v1: Qd = V + (Ad - ave(Ad)), must dueling.  v2: Qd = V + (Ad - max(Ad)), must dueling
+    model_version = 2           #v0: single(6*7),   v1: two output  v2: dueling ddqn
+    q_version = 2               #v0: indep: yd = r + Qd_(sd', argmax Qd(sd',ad')), multiple optimizers  v1: global y = r + max Qd_(sd', argmax Qd(sd',ad')) one optimize v2: global y = r + ave( Qd_(sd', argmax Qd(sd',ad')))), one optimizer
+    target_version = 2          #v0: naive Qd = V + Ad , dueling or not    v1: Qd = V + (Ad - ave(Ad)), must dueling.  v2: Qd = V + (Ad - max(Ad)), must dueling
     loss_version = 1            #v0: global loss, v1: indep loss
     if model_version == 0:
         loss_version = 0        # for model v1(single output), loss version must be v0

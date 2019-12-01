@@ -6,7 +6,7 @@ class Model(nn.Module):
     def __init__(self, action_dims, model_version, loss_version):
         super().__init__()
         self.model_version = model_version
-
+        self.loss_version = loss_version
         if self.model_version == 0:
             self.lstm1 = nn.LSTM(input_size=5, hidden_size=32, num_layers=2, dropout=0.1, batch_first=True, bidirectional=True)
             self.fc1 = nn.Sequential(
