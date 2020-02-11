@@ -6,11 +6,7 @@ class Config(object):
     # For model v2(dueling), 3 q_versions and 3 target (1 indep, and 2 global)
     model_version = 2           #v0: single(6*7),   v1: two output  v2: dueling ddqn
     q_version = 2               #v0: indep: yd = r + Qd_(sd', argmax Qd(sd',ad')), multiple optimizers  v1: global y = r + max Qd_(sd', argmax Qd(sd',ad')) one optimize v2: global y = r + ave( Qd_(sd', argmax Qd(sd',ad')))), one optimizer
-<<<<<<< HEAD
     target_version = 2          #v0: naive Qd = V + Ad , dueling or not    v1: Qd = V + (Ad - ave(Ad)), must dueling.  v2: Qd = V + (Ad - max(Ad)), must dueling
-=======
-    target_version = 1          #v0: naive Qd = V + Ad , dueling or not    v1: Qd = V + (Ad - ave(Ad)), must dueling.  v2: Qd = V + (Ad - max(Ad)), must dueling
->>>>>>> c9d0511aff4fc62b7c2ed24ae19deaad166cd93d
     loss_version = 0            #v0: global loss, v1: indep loss
     if model_version == 0:
         loss_version = 0        # for model v1(single output), loss version must be v0
