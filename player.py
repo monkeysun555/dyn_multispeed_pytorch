@@ -234,8 +234,9 @@ class Live_Player(object):
             return
         self.playing_time -= num_repeat*self.seg_duration
         self.buffer += num_repeat*self.seg_duration
-        if self.buffer >= self.start_up_ssh:
+        if (self.state == 0 and self.buffer >= self.start_up_ssh) or self.state == 2:
             self.state = 1
+
 
     def adjust_start_up_ssh(self, new_start_up_ssh):
         self.start_up_ssh = new_start_up_ssh
