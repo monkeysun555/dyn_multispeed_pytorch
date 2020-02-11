@@ -20,4 +20,4 @@ cd $VIRTUALENV
 source ./torch/bin/activate
   
 cd $RUNDIR
-python main.py
+python main.py -s 2
