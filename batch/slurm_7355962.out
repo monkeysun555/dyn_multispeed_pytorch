@@ -1,0 +1,14 @@
+player initial finish
+episode: 1000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-1000.pth
+Episode: 1000 Reward: -1348.831 Loss: 6.417
+Traceback (most recent call last):
+  File "main.py", line 115, in <module>
+    main()
+  File "main.py", line 65, in main
+    reward = env.act(action_1, action_2)
+  File "/scratch/ls3817/low_latency_streaming/dyn_multispeed_torch/env.py", line 115, in act
+    take_action, chunk_number, transformed_action_2)
+  File "/scratch/ls3817/low_latency_streaming/dyn_multispeed_torch/player.py", line 105, in fetch
+    assert self.buffer == 0.0
+AssertionError
