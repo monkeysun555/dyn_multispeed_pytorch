@@ -7,7 +7,7 @@ class Config(object):
     model_version = 2           #v0: single(6*7),   v1: two output  v2: dueling ddqn
     q_version = 2               #v0: indep: yd = r + Qd_(sd', argmax Qd(sd',ad')), multiple optimizers  v1: global y = r + max Qd_(sd', argmax Qd(sd',ad')) one optimize v2: global y = r + ave( Qd_(sd', argmax Qd(sd',ad')))), one optimizer
     target_version = 2          #v0: naive Qd = V + Ad , dueling or not    v1: Qd = V + (Ad - ave(Ad)), must dueling.  v2: Qd = V + (Ad - max(Ad)), must dueling
-    loss_version = 1            #v0: global loss, v1: indep loss
+    loss_version = 0            #v0: global loss, v1: indep loss
     if model_version == 0:
         loss_version = 0        # for model v1(single output), loss version must be v0
     initial_epsilon = 1.0 
@@ -18,9 +18,9 @@ class Config(object):
     else:
         epsilon_decay = 5000.0          # less, focus faster
     if model_version == 0 or model_version == 1:
-        logs_path = './logs_m_' + str(model_version) + '/t_' + str(target_version) + '/l_' + str(loss_version)
+        logs_path = './models/logs_m_' + str(model_version) + '/t_' + str(target_version) + '/l_' + str(loss_version)
     else:
-        logs_path = './logs_m_' + str(model_version) + '/q_' + str(q_version) + '/t_' + str(target_version) + '/l_' + str(loss_version)
+        logs_path = './models/logs_m_' + str(model_version) + '/q_' + str(q_version) + '/t_' + str(target_version) + '/l_' + str(loss_version)
     reply_buffer_size = 3000
     total_episode = 50000
     discount_factor = 0.99
@@ -74,7 +74,7 @@ class Env_Config(object):
     default_action_1 = 0
     default_action_2 = 3
     skip_segs = 3.0
-    repeat_segs = 3.0
+    repeat_segs = 1.0
 
     # Server info
     bitrate_low_noise = 0.7

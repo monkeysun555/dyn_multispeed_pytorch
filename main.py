@@ -48,7 +48,7 @@ def main():
         while not env.streaming_finish():
             if Config.model_version == 0:                
                 action = agent.take_action(np.array([state]))
-                action_1 = int(action/action_dims[1])
+                action_1 = action//action_dims[1]
                 action_2 = action%action_dims[1]
                 reward = env.act(action_1, action_2)
                 # print(reward)
