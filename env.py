@@ -23,7 +23,7 @@ class Live_Streaming(object):
             self.trace_idx = np.random.randint(len(self.throughput_traces))
         # Initial server and player
         self.player = Live_Player(self.throughput_traces[self.trace_idx], self.time_traces[self.trace_idx], self.name_traces[self.trace_idx])
-        self.server = Live_Server()
+        self.server = Live_Server(random_seed)
         self.buffer_ub = Env_Config.buffer_ub
         self.freezing_ub = self.player.get_freezing_tol()
         # Initial environment variables

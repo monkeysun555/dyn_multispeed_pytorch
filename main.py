@@ -9,20 +9,20 @@ from reply_buffer import Reply_Buffer
 from agent import Agent
 from utils import *
 
-# def parse_args():
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument('-t', '--test', dest='test', help='do testing',
-#                         default=None, type=str)
-#     # parser.add_argument('-t', '--train', dest='train', help='train policy or not',
-#     #                     default=True, type=bool)
-#     args = parser.parse_args()
-#     return args
-# args = parse_args() 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-s', '--seed', dest='seed', help='random seed',
+                        default=Config.random_seed, type=int)
+    # parser.add_argument('-t', '--train', dest='train', help='train policy or not',
+    #                     default=True, type=bool)
+    args = parser.parse_args()
+    return args
+args = parse_args() 
 
 def main():
-    # restore = args.restore
+    seed = args.seed
     # Load env
-    env = Env.Live_Streaming()
+    env = Env.Live_Streaming(random_seed=seed)
     _, action_dims = env.get_action_info()
     reply_buffer = Reply_Buffer(Config.reply_buffer_size)
     agent = Agent(action_dims)
