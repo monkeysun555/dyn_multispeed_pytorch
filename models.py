@@ -32,8 +32,8 @@ class Model(nn.Module):
 
     def forward(self, observation):
         # Shape of observation: (batch, 15, 10) (batch, seq, input_size)
-        h0 = torch.randn(2*2, len(observation), 32).cuda()
-        c0 = torch.randn(2*2, len(observation), 32).cuda()
+        h0 = torch.randn(2*2, len(observation), 32)
+        c0 = torch.randn(2*2, len(observation), 32)
         if self.model_version == 0:
             lstm1_out, (hn, cn) = self.lstm1(torch.transpose(observation[:, 0:5,:], 1, 2), (h0,c0))         # input: (5, 15) to (1,15,5) , output: (1,15, 2*32)
             fc1_out = self.fc1(observation[:, 5:, -1])

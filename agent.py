@@ -27,8 +27,8 @@ class Agent:
         self.build_network()
 
     def build_network(self):
-        self.Q_network = Model(self.action_dims, self.model_version, self.loss_version).cuda()
-        self.target_network = Model(self.action_dims, self.model_version, self.loss_version).cuda()
+        self.Q_network = Model(self.action_dims, self.model_version, self.loss_version)
+        self.target_network = Model(self.action_dims, self.model_version, self.loss_version)
         # Change learning rate for commen net !!!! Start from here
         if self.loss_version == 0:
             self.optimizers = optim.Adam(self.Q_network.parameters(), lr=Config.lr)
@@ -73,18 +73,18 @@ class Agent:
         state_new = torch.from_numpy(state_new).float()
         terminal = torch.from_numpy(terminal).float()
         reward = torch.from_numpy(reward).float()
-        state = Variable(state).cuda()
-        action = Variable(action).cuda()                  # shape (batch, 6*7)
-        state_new = Variable(state_new).cuda()
-        terminal = Variable(terminal).cuda()
-        reward = Variable(reward).cuda()
+        state = Variable(state)
+        action = Variable(action)                  # shape (batch, 6*7)
+        state_new = Variable(state_new)
+        terminal = Variable(terminal)
+        reward = Variable(reward)
         self.Q_network.eval()
         self.target_network.eval()
         
         # use current network to evaluate action argmax_a' Q_current(s', a')_
         actions_new = self.Q_network.forward(state_new).max(dim=1)[1].cpu().data.view(-1, 1)
         actions_new_onehot = torch.zeros(Config.sampling_batch_size, self.action_dims[0]*self.action_dims[1]) 
-        actions_new_onehot = Variable(actions_new_onehot.scatter_(1, actions_new, 1.0)).cuda()
+        actions_new_onehot = Variable(actions_new_onehot.scatter_(1, actions_new, 1.0))
         
         # Different loss and object
         # use target network to evaluate value y = r + discount_factor * Q_tar(s', a')
@@ -109,12 +109,12 @@ class Agent:
         state_new = torch.from_numpy(state_new).float()
         terminal = torch.from_numpy(terminal).float()
         reward = torch.from_numpy(reward).float()
-        state = Variable(state).cuda()
-        action_1 = Variable(action_1).cuda()                 
-        action_2 = Variable(action_2).cuda()
-        state_new = Variable(state_new).cuda()
-        terminal = Variable(terminal).cuda()
-        reward = Variable(reward).cuda()
+        state = Variable(state)
+        action_1 = Variable(action_1)                 
+        action_2 = Variable(action_2)
+        state_new = Variable(state_new)
+        terminal = Variable(terminal)
+        reward = Variable(reward)
         self.Q_network.eval()
         self.target_network.eval()
         
@@ -122,7 +122,7 @@ class Agent:
         new_q_values = self.Q_network.forward(state_new)
         actions_new = [torch.max(q_value, 1)[1].cpu().data.view(-1, 1) for q_value in new_q_values] 
         actions_new_onehot = [torch.zeros(Config.sampling_batch_size, action_dim) for action_dim in self.action_dims]
-        actions_new_onehot = [Variable(actions_new_onehot[action_idx].scatter_(1, actions_new[action_idx], 1.0)).cuda() for action_idx in range(len(self.action_dims))]
+        actions_new_onehot = [Variable(actions_new_onehot[action_idx].scatter_(1, actions_new[action_idx], 1.0)) for action_idx in range(len(self.action_dims))]
         
         # Different loss and object
         # use target network to evaluate value y = r + discount_factor * Q_tar(s', a')
@@ -169,12 +169,12 @@ class Agent:
         state_new = torch.from_numpy(state_new).float()
         terminal = torch.from_numpy(terminal).float()
         reward = torch.from_numpy(reward).float()
-        state = Variable(state).cuda()
-        action_1 = Variable(action_1).cuda()                 
-        action_2 = Variable(action_2).cuda()
-        state_new = Variable(state_new).cuda()
-        terminal = Variable(terminal).cuda()
-        reward = Variable(reward).cuda()
+        state = Variable(state)
+        action_1 = Variable(action_1)                 
+        action_2 = Variable(action_2)
+        state_new = Variable(state_new)
+        terminal = Variable(terminal)
+        reward = Variable(reward)
         self.Q_network.eval()
         self.target_network.eval()
         
@@ -185,7 +185,7 @@ class Agent:
         # print(new_q_values[0], new_q_values[0] + new_q_values[2], new_q_values[2])   
         actions_new = [torch.max(q_value, 1)[1].cpu().data.view(-1, 1) for q_value in new_q_values[:2]] 
         actions_new_onehot = [torch.zeros(Config.sampling_batch_size, action_dim) for action_dim in self.action_dims]
-        actions_new_onehot = [Variable(actions_new_onehot[action_idx].scatter_(1, actions_new[action_idx], 1.0)).cuda() for action_idx in range(len(self.action_dims))]
+        actions_new_onehot = [Variable(actions_new_onehot[action_idx].scatter_(1, actions_new[action_idx], 1.0)) for action_idx in range(len(self.action_dims))]
 
         actions = [action_1, action_2]
         raw_y = self.target_network.forward(state_new)
@@ -318,7 +318,7 @@ class Agent:
 
     def take_action(self, state):
         state = torch.from_numpy(state).float()
-        state = Variable(state).cuda()
+        state = Variable(state)
         self.Q_network.eval()
 
         if self.model_version == 0:
@@ -348,7 +348,7 @@ class Agent:
 
     def testing_take_action(self, state):
         state = torch.from_numpy(state).float()
-        state = Variable(state).cuda()
+        state = Variable(state)
         self.Q_network.eval()
         if self.model_version == 0:
             estimate = torch.max(self.Q_network.forward(state), 1)[1].data[0]
