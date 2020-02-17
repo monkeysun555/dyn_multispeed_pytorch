@@ -2,9 +2,8 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=1
-#SBATCH --time=5:00:00
-#SBATCH --mem=4GB
-#SBATCH --gres=gpu:1
+#SBATCH --time=36:00:00
+#SBATCH --mem=8GB
 #SBATCH --job-name=ms_%j
 #SBATCH --mail-type=END
 #SBATCH --mail-user=ls3817@nyu.edu
@@ -20,4 +19,4 @@ cd $VIRTUALENV
 source ./torch/bin/activate
   
 cd $RUNDIR
-python main.py -s 100
+python main.py -s 1
