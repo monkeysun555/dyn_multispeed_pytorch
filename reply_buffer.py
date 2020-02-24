@@ -26,7 +26,7 @@ class Reply_Buffer:
                 batch_state_new.append(b[4])
                 # batch_over.append(float(not b[5]))
                 batch_over.append(1.0)
-                
+
             batch_state = np.stack(batch_state)
             batch_action_1 = np.stack(batch_action_1)
             batch_action_2 = np.stack(batch_action_2)
@@ -42,8 +42,9 @@ class Reply_Buffer:
                 batch_action.append(b[1])
                 batch_reward.append(b[2])
                 batch_state_new.append(b[3])
-                batch_over.append(float(not b[4]))
-            
+                # batch_over.append(float(not b[4]))
+                batch_over.append(1.0)
+                
             batch_state = np.stack(batch_state)
             batch_action = np.stack(batch_action)
             batch_reward = np.stack(batch_reward)
