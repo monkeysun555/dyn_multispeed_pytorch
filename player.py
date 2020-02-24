@@ -1,15 +1,16 @@
 import numpy as np
 from config import Env_Config, Config
- 
+from random import Random
+
 class Live_Player(object):
     def __init__(self, throughput_trace, time_trace, trace_name, random_seed=Config.random_seed):
-        # np.random.seed(random_seed)
+        self.myRandom = Random(random_seed)
         self.throughput_trace = throughput_trace
         self.time_trace = time_trace
         self.trace_name = trace_name
 
         self.playing_time = 0.0
-        self.time_idx = np.random.randint(1,len(self.time_trace))
+        self.time_idx = self.myRandom.randint(1,len(self.time_trace)-1)
         self.last_trace_time = self.time_trace[self.time_idx-1] * Env_Config.ms_in_s   # in ms
 
         self.seg_duration = Env_Config.seg_duration
@@ -269,14 +270,15 @@ class Live_Player(object):
         # return sync
         pass
 
-    def reset(self, throughput_trace, time_trace, trace_name):
+    def reset(self, throughput_trace, time_trace, trace_name, testing=False):
         self.playing_time = 0.0
-
         self.throughput_trace = throughput_trace
         self.time_trace = time_trace
         self.trace_name = trace_name
-
-        self.time_idx = np.random.randint(1,len(self.time_trace))
+        if testing:
+            self.time_idx = 1
+        else:
+            self.time_idx = self.myRandom.randint(1,len(self.time_trace)-1)
         self.last_trace_time = self.time_trace[self.time_idx-1] * Env_Config.ms_in_s # in ms
         self.buffer = 0.0   # ms
         self.state = 0  # 0: start up.  1: traceing. 2: rebuffering

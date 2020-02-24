@@ -12,6 +12,7 @@ def load_bandwidth(testing=False):
     data_names = []
     if Env_Config.bw_env_version == 0:
         for data in datas:
+            if  '.DS' in data: continue
             file_path = Env_Config.data_dir + data
             time_trace = []
             throughput_trace = []
@@ -27,6 +28,7 @@ def load_bandwidth(testing=False):
             data_names.append(data)
     elif Env_Config.bw_env_version == 1:
         for data in datas:
+            if  '.DS' in data: continue
             file_path = Env_Config.data_dir + data
             time_trace = []
             throughput_trace = []

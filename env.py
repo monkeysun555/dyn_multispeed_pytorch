@@ -9,21 +9,20 @@ from server import *
 from utils import load_bandwidth, load_single_trace
 
 class Live_Streaming(object):
-    def __init__(self, testing=False, massive=False, random_seed=Config.random_seed):
+    def __init__(self, initial_latency, testing=False, massive=False, random_seed=Config.random_seed):
         np.random.seed(random_seed)
         if testing:
             self.time_traces, self.throughput_traces, self.name_traces = load_bandwidth()
             if massive: 
                 self.trace_idx = -1     # After first reset, it is 0
             else:
-                assert trace_idx
                 self.trace_idx = Config.trace_idx
         else:
             self.time_traces, self.throughput_traces, self.name_traces = load_bandwidth()
             self.trace_idx = np.random.randint(len(self.throughput_traces))
         # Initial server and player
         self.player = Live_Player(self.throughput_traces[self.trace_idx], self.time_traces[self.trace_idx], self.name_traces[self.trace_idx])
-        self.server = Live_Server(random_seed)
+        self.server = Live_Server(initial_latency)
         self.buffer_ub = Env_Config.buffer_ub
         self.freezing_ub = self.player.get_freezing_tol()
         # Initial environment variables
@@ -241,7 +240,7 @@ class Live_Streaming(object):
             if self.trace_idx == len(self.throughput_traces):
                 return 1
             self.player.reset(self.throughput_traces[self.trace_idx], self.time_traces[self.trace_idx], self.name_traces[self.trace_idx])
-            self.server.reset()
+            self.server.reset(testing=testing)
             self.ending_flag = 0
             self.video_length = 0
             return 0

@@ -3,19 +3,21 @@ from config import Env_Config, Config
 from random import Random
 
 class Live_Server(object):
-    def __init__(self, random_seed=Config.random_seed):
+    def __init__(self, initial_latency, random_seed=Config.random_seed):
         # np.random.seed(random_seed)
         self.myRandom = Random(random_seed)
+        self.initial_latency = initial_latency
         self.seg_duration = Env_Config.seg_duration
         self.chunk_duration = Env_Config.chunk_duration
         self.chunk_in_seg = Env_Config.chunk_in_seg
-        self.time = self.myRandom.randint(Env_Config.server_init_lat_low, Env_Config.server_init_lat_high)*Env_Config.seg_duration + self.myRandom.randint(1,self.seg_duration)
-        self.current_seg_idx = -1   # For initial
-        self.current_chunk_idx = 0
-        self.chunks = []    # 1 for initial chunk, 0 for following chunks
-        self.current_seg_size = [[] for i in range(len(Env_Config.bitrate))]
-        self.encoding_update(0.0, self.time)
         self.next_delivery = []
+
+        # self.time = self.myRandom.randint(Env_Config.server_init_lat_low, Env_Config.server_init_lat_high)*Env_Config.seg_duration + self.myRandom.randint(1,self.seg_duration)
+        # self.current_seg_idx = -1   # For initial
+        # self.current_chunk_idx = 0
+        # self.chunks = []    # 1 for initial chunk, 0 for following chunks
+        # self.current_seg_size = [[] for i in range(len(Env_Config.bitrate))]
+        # self.encoding_update(0.0, self.time)
 
     def generate_next_delivery(self):
         deliver_chunks = []
@@ -106,8 +108,10 @@ class Live_Server(object):
         self.time = next_available_time
         return time_interval        # in ms
 
-    def reset(self):
-        self.time = self.myRandom.randint(Env_Config.server_init_lat_low, Env_Config.server_init_lat_high)*Env_Config.seg_duration + self.myRandom.randint(1,self.seg_duration)   
+    def reset(self, testing=False):
+        if testing:
+            self.myRandom = Random(Config.random_seed)
+        self.time = (self.myRandom.random() + self.initial_latency)*Env_Config.seg_duration           
         self.current_seg_idx = -1
         self.current_chunk_idx = 0
         self.chunks = []    # 1 for initial chunk, 0 for following chunks

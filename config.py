@@ -14,7 +14,7 @@ class Config(object):
     epsilon_start = 1.0
     epsilon_final = 0.0001
     if model_version == 0:
-        epsilon_decay = 5000.0          # less, focus faster
+        epsilon_decay = 10000.0          # less, focus faster
     else:
         epsilon_decay = 5000.0          # less, focus faster
     if model_version == 0 or model_version == 1:
@@ -35,6 +35,7 @@ class Config(object):
     maximum_model = 5
     random_seed = 11
     massive_result_files = './all_results/all_results'
+    regular_test_files = './debug/'
     trace_idx = 2
 
 class Env_Config(object):
@@ -94,7 +95,13 @@ class Env_Config(object):
     const = 6.0
     x_ratio = 1.0 
     speed_smooth_penalty = 2.0
-    unnormal_playing_penalty = 2.0              
+    unnormal_playing_penalty = 1.0              
     skip_seg_penalty = 3.0              
     repeat_seg_penalty = 3.0      
     skip_latency = skip_segs * seg_duration + chunk_duration 
+
+class Plot_Config(object):
+    result_dir = './debug/model_0/'
+    figures_dir = './test_figures/model_0/'
+    result_file = './test_figures/model_0/'
+    plt_buffer_a = 1e-5

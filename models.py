@@ -5,6 +5,7 @@ from config import Config
 class Model(nn.Module):
     def __init__(self, action_dims, model_version, loss_version):
         super().__init__()
+        torch.manual_seed(1)
         self.model_version = model_version
         self.loss_version = loss_version
         if self.model_version == 0:
