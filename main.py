@@ -12,7 +12,7 @@ from utils import *
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-l', '--latency', dest='init_latency', help='set initial latency',
-                        default=None, type=int)
+                        default=2, type=int)
     parser.add_argument('-s', '--seed', dest='seed', help='random seed',
                         default=Config.random_seed, type=int)
     parser.add_argument('-r', '--restore', dest='restore', help='restore model',
@@ -35,10 +35,9 @@ def main():
     loss_logs = []
 
     logs_path = Config.logs_path + '/'
+    logs_path += 'latency_' + str(initial_latency) + 's/'
     if not os.path.exists(logs_path):
          os.makedirs(logs_path) 
-    logs_path += 'latency_' + str(initial_latency) + 's'
-
 
     starting_episode = 1
     # restore model

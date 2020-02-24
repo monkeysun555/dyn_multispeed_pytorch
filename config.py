@@ -24,14 +24,14 @@ class Config(object):
     reply_buffer_size = 3000
     total_episode = 50000
     discount_factor = 0.99
-    save_logs_frequency = 1000
+    save_logs_frequency = 500
     lr = 1e-3
     momentum = 0.9
     # batch_size = 300
     observe_episode = 5
     sampling_batch_size = 300
     update_target_frequency = 50
-    show_loss_frequency = 1000
+    show_loss_frequency = 500
     maximum_model = 5
     random_seed = 11
     massive_result_files = './all_results/all_results'
@@ -51,7 +51,7 @@ class Env_Config(object):
     s_len = 15
     a_num = 2
     a_dims = [6, 7] # 6 bitrates and 7 playing speed
-    video_terminal_length = 300
+    video_terminal_length = 200
     packet_payload_portion = 0.973
     rtt_low = 30.0
     rtt_high = 40.0 
