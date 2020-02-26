@@ -1,0 +1,13 @@
+player initial finish
+episode: 1000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-1000.pth
+Episode: 1000 Reward: -848.418 Loss: 11.245
+episode: 2000
+Traceback (most recent call last):
+  File "main.py", line 124, in <module>
+    main()
+  File "main.py", line 111, in main
+    agent.save(episode, Config.logs_path)
+  File "/scratch/ls3817/low_latency_streaming/dyn_multispeed_torch/agent.py", line 377, in save
+    os.remove(os.path.join(logs_path, 'model-{}.pth' .format(min_step)))
+FileNotFoundError: [Errno 2] No such file or directory: './models/logs_m_2/q_2/t_2/l_0/model-2000.pth'

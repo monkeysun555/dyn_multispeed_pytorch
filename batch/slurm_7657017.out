@@ -1,0 +1,301 @@
+player initial finish
+episode: 500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-500.pth
+Episode: 500 Reward: -854.928 Loss: 13.612
+episode: 1000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-1000.pth
+Episode: 1000 Reward: -805.782 Loss: 18.340
+episode: 1500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-1500.pth
+Episode: 1500 Reward: -435.049 Loss: 19.597
+episode: 2000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-2000.pth
+Episode: 2000 Reward: -628.413 Loss: 25.524
+episode: 2500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-2500.pth
+Episode: 2500 Reward: -162.260 Loss: 9.059
+episode: 3000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-3000.pth
+Episode: 3000 Reward: -82.325 Loss: 9.705
+episode: 3500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-3500.pth
+Episode: 3500 Reward: -82.509 Loss: 16.081
+episode: 4000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-4000.pth
+Episode: 4000 Reward: 2.937 Loss: 17.257
+episode: 4500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-4500.pth
+Episode: 4500 Reward: 32.844 Loss: 9.902
+episode: 5000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-5000.pth
+Episode: 5000 Reward: 46.151 Loss: 11.492
+episode: 5500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-5500.pth
+Episode: 5500 Reward: -0.942 Loss: 11.053
+episode: 6000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-6000.pth
+Episode: 6000 Reward: 54.706 Loss: 10.577
+episode: 6500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-6500.pth
+Episode: 6500 Reward: 66.273 Loss: 7.288
+episode: 7000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-7000.pth
+Episode: 7000 Reward: -0.078 Loss: 9.400
+episode: 7500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-7500.pth
+Episode: 7500 Reward: 157.292 Loss: 8.918
+episode: 8000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-8000.pth
+Episode: 8000 Reward: 127.615 Loss: 10.786
+episode: 8500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-8500.pth
+Episode: 8500 Reward: -89.168 Loss: 7.608
+episode: 9000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-9000.pth
+Episode: 9000 Reward: 25.338 Loss: 8.319
+episode: 9500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-9500.pth
+Episode: 9500 Reward: 201.360 Loss: 8.552
+episode: 10000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-10000.pth
+Episode: 10000 Reward: -3.846 Loss: 7.754
+episode: 10500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-10500.pth
+Episode: 10500 Reward: 190.224 Loss: 8.228
+episode: 11000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-11000.pth
+Episode: 11000 Reward: 163.053 Loss: 5.443
+episode: 11500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-11500.pth
+Episode: 11500 Reward: 273.845 Loss: 4.244
+episode: 12000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-12000.pth
+Episode: 12000 Reward: 197.965 Loss: 5.467
+episode: 12500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-12500.pth
+Episode: 12500 Reward: 290.147 Loss: 6.041
+episode: 13000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-13000.pth
+Episode: 13000 Reward: 100.566 Loss: 7.993
+episode: 13500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-13500.pth
+Episode: 13500 Reward: 252.458 Loss: 6.265
+episode: 14000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-14000.pth
+Episode: 14000 Reward: 256.300 Loss: 11.208
+episode: 14500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-14500.pth
+Episode: 14500 Reward: 218.469 Loss: 5.837
+episode: 15000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-15000.pth
+Episode: 15000 Reward: 313.674 Loss: 10.613
+episode: 15500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-15500.pth
+Episode: 15500 Reward: 324.672 Loss: 6.043
+episode: 16000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-16000.pth
+Episode: 16000 Reward: 311.786 Loss: 6.599
+episode: 16500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-16500.pth
+Episode: 16500 Reward: 275.980 Loss: 6.758
+episode: 17000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-17000.pth
+Episode: 17000 Reward: 390.974 Loss: 15.597
+episode: 17500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-17500.pth
+Episode: 17500 Reward: 343.653 Loss: 9.726
+episode: 18000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-18000.pth
+Episode: 18000 Reward: 380.653 Loss: 12.550
+episode: 18500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-18500.pth
+Episode: 18500 Reward: 383.592 Loss: 10.190
+episode: 19000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-19000.pth
+Episode: 19000 Reward: 320.177 Loss: 10.786
+episode: 19500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-19500.pth
+Episode: 19500 Reward: 400.045 Loss: 14.675
+episode: 20000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-20000.pth
+Episode: 20000 Reward: -55.420 Loss: 10.164
+episode: 20500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-20500.pth
+Episode: 20500 Reward: 404.876 Loss: 9.815
+episode: 21000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-21000.pth
+Episode: 21000 Reward: 398.428 Loss: 12.882
+episode: 21500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-21500.pth
+Episode: 21500 Reward: 107.471 Loss: 15.323
+episode: 22000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-22000.pth
+Episode: 22000 Reward: 346.508 Loss: 13.882
+episode: 22500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-22500.pth
+Episode: 22500 Reward: 98.209 Loss: 19.137
+episode: 23000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-23000.pth
+Episode: 23000 Reward: 88.382 Loss: 10.469
+episode: 23500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-23500.pth
+Episode: 23500 Reward: 351.009 Loss: 13.848
+episode: 24000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-24000.pth
+Episode: 24000 Reward: 365.132 Loss: 9.561
+episode: 24500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-24500.pth
+Episode: 24500 Reward: 39.991 Loss: 9.237
+episode: 25000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-25000.pth
+Episode: 25000 Reward: 404.158 Loss: 8.985
+episode: 25500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-25500.pth
+Episode: 25500 Reward: 11.263 Loss: 17.406
+episode: 26000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-26000.pth
+Episode: 26000 Reward: 358.418 Loss: 9.083
+episode: 26500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-26500.pth
+Episode: 26500 Reward: 226.214 Loss: 16.822
+episode: 27000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-27000.pth
+Episode: 27000 Reward: 368.502 Loss: 16.147
+episode: 27500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-27500.pth
+Episode: 27500 Reward: 265.157 Loss: 11.795
+episode: 28000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-28000.pth
+Episode: 28000 Reward: 256.060 Loss: 17.155
+episode: 28500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-28500.pth
+Episode: 28500 Reward: 155.813 Loss: 6.867
+episode: 29000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-29000.pth
+Episode: 29000 Reward: 337.264 Loss: 12.657
+episode: 29500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-29500.pth
+Episode: 29500 Reward: 395.936 Loss: 14.898
+episode: 30000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-30000.pth
+Episode: 30000 Reward: 340.139 Loss: 15.789
+episode: 30500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-30500.pth
+Episode: 30500 Reward: 414.331 Loss: 29.969
+episode: 31000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-31000.pth
+Episode: 31000 Reward: 120.505 Loss: 21.338
+episode: 31500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-31500.pth
+Episode: 31500 Reward: 375.580 Loss: 23.139
+episode: 32000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-32000.pth
+Episode: 32000 Reward: 349.363 Loss: 11.650
+episode: 32500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-32500.pth
+Episode: 32500 Reward: 399.066 Loss: 11.636
+episode: 33000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-33000.pth
+Episode: 33000 Reward: 241.384 Loss: 20.575
+episode: 33500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-33500.pth
+Episode: 33500 Reward: 414.950 Loss: 16.127
+episode: 34000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-34000.pth
+Episode: 34000 Reward: 191.231 Loss: 16.877
+episode: 34500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-34500.pth
+Episode: 34500 Reward: 334.195 Loss: 16.579
+episode: 35000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-35000.pth
+Episode: 35000 Reward: 3.137 Loss: 12.557
+episode: 35500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-35500.pth
+Episode: 35500 Reward: 219.347 Loss: 13.437
+episode: 36000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-36000.pth
+Episode: 36000 Reward: 374.781 Loss: 12.050
+episode: 36500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-36500.pth
+Episode: 36500 Reward: 283.502 Loss: 4.378
+episode: 37000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-37000.pth
+Episode: 37000 Reward: 246.450 Loss: 11.753
+episode: 37500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-37500.pth
+Episode: 37500 Reward: 196.599 Loss: 10.192
+episode: 38000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-38000.pth
+Episode: 38000 Reward: 410.920 Loss: 13.802
+episode: 38500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-38500.pth
+Episode: 38500 Reward: 399.391 Loss: 18.545
+episode: 39000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-39000.pth
+Episode: 39000 Reward: 59.226 Loss: 11.250
+episode: 39500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-39500.pth
+Episode: 39500 Reward: 75.783 Loss: 8.879
+episode: 40000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-40000.pth
+Episode: 40000 Reward: 50.980 Loss: 8.252
+episode: 40500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-40500.pth
+Episode: 40500 Reward: 412.243 Loss: 13.515
+episode: 41000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-41000.pth
+Episode: 41000 Reward: 386.205 Loss: 23.362
+episode: 41500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-41500.pth
+Episode: 41500 Reward: -3.594 Loss: 22.847
+episode: 42000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-42000.pth
+Episode: 42000 Reward: 411.647 Loss: 11.892
+episode: 42500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-42500.pth
+Episode: 42500 Reward: 383.716 Loss: 4.751
+episode: 43000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-43000.pth
+Episode: 43000 Reward: 408.257 Loss: 10.799
+episode: 43500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-43500.pth
+Episode: 43500 Reward: 77.408 Loss: 21.823
+episode: 44000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-44000.pth
+Episode: 44000 Reward: 407.708 Loss: 13.761
+episode: 44500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-44500.pth
+Episode: 44500 Reward: 386.921 Loss: 11.134
+episode: 45000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-45000.pth
+Episode: 45000 Reward: 379.436 Loss: 11.877
+episode: 45500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-45500.pth
+Episode: 45500 Reward: 411.951 Loss: 18.419
+episode: 46000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-46000.pth
+Episode: 46000 Reward: 385.372 Loss: 12.441
+episode: 46500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-46500.pth
+Episode: 46500 Reward: 404.171 Loss: 14.890
+episode: 47000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-47000.pth
+Episode: 47000 Reward: 334.390 Loss: 13.490
+episode: 47500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-47500.pth
+Episode: 47500 Reward: 305.665 Loss: 21.192
+episode: 48000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-48000.pth
+Episode: 48000 Reward: 141.070 Loss: 26.640
+episode: 48500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-48500.pth
+Episode: 48500 Reward: 385.794 Loss: 5.549
+episode: 49000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-49000.pth
+Episode: 49000 Reward: 374.708 Loss: 25.555
+episode: 49500
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-49500.pth
+Episode: 49500 Reward: 383.817 Loss: 10.675
+episode: 50000
+=> Save ./models/logs_m_2/q_2/t_2/l_0/model-50000.pth
+Episode: 50000 Reward: 375.110 Loss: 18.605
