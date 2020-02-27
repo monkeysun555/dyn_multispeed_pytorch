@@ -15,6 +15,13 @@ class Live_Streaming(object):
             self.time_traces, self.throughput_traces, self.name_traces = load_bandwidth()
             if massive: 
                 self.trace_idx = -1     # After first reset, it is 0
+                self.a1_batch = []
+                self.a2_batch = []
+                self.c_batch = []
+                self.l_batch = []
+                self.f_batch = []
+                self.r_batch = []
+                self.sc_batch = []
             else:
                 self.trace_idx = Config.trace_idx
         else:
@@ -164,6 +171,18 @@ class Live_Streaming(object):
             # Sum of all metrics
             action_reward += quality_r - rebuff_p - smooth_p - delay_p - unnormal_speed_p - speed_smooth_p - missing_p - repeat_p
 
+            # print("<00000000000000000>")
+            # print("action: ", action_1, action_2)
+            # print(action_reward)
+            # print(quality_r)
+            # print(rebuff_p)
+            # print(smooth_p)
+            # print(delay_p)
+            # print(unnormal_speed_p)
+            # print(speed_smooth_p)
+            # print(missing_p)
+            # print(repeat_p)
+            # print("<--->")
             # Update state
             # print(state)
             state = np.roll(state, -1, axis=1)
@@ -179,7 +198,7 @@ class Live_Streaming(object):
             state[9, -1] = transformed_action_2                             # playing speed, 0.75 to 1.25
 
             state = self.normal(state)
-
+            # print(state)
             action_freezing += freezing
             action_wait += server_wait_time
             # Check whether a segment is finished
@@ -200,13 +219,13 @@ class Live_Streaming(object):
                             str(latency) + '\t' +
                             str(self.player.get_state()) + '\t' +
                             str(int(action_1/len(self.bitrates))) + '\t' +
-                            str(action_2) + '\t' + 
+                            str(transformed_action_2) + '\t' + 
                             str(action_reward) + '\n') 
                     log_file.flush()
                 return action_reward
 
     def normal(self, state):
-        state[0, -1] = state[0, -1]/(self.bitrates[-1]/Env_Config.chunk_in_seg)
+        state[0, -1] = state[0, -1]/(2.0*self.bitrates[-1]/Env_Config.chunk_in_seg)
         state[1, -1] = state[1, -1]/Env_Config.ms_in_s
         state[2, -1] = state[2, -1]/self.buffer_ub
         state[3, -1] = state[3, -1]/Env_Config.chunk_duration
@@ -215,7 +234,7 @@ class Live_Streaming(object):
         state[6, -1] = state[6, -1]/self.buffer_ub
         state[7, -1] = state[7, -1]/2.0
         state[8, -1] = state[8, -1]/2.0
-        state[9, -1] = state[9, -1]/self.speeds[-2]
+        state[9, -1] = (state[9, -1]-self.speeds[1])/0.5
         return state
 
     def get_server_time(self):
@@ -239,15 +258,22 @@ class Live_Streaming(object):
             self.trace_idx += 1
             if self.trace_idx == len(self.throughput_traces):
                 return 1
-            self.player.reset(self.throughput_traces[self.trace_idx], self.time_traces[self.trace_idx], self.name_traces[self.trace_idx])
+            self.player.reset(self.throughput_traces[self.trace_idx], self.time_traces[self.trace_idx], self.name_traces[self.trace_idx], testing=True)
             self.server.reset(testing=testing)
             self.ending_flag = 0
             self.video_length = 0
+            self.a1_batch = []
+            self.a2_batch = []
+            self.c_batch = []
+            self.l_batch = []
+            self.f_batch = []
+            self.r_batch = []
+            self.sc_batch = []
             return 0
         else:
             self.state = np.zeros((Env_Config.s_info, Env_Config.s_len))
             self.trace_idx = np.random.randint(len(self.throughput_traces))
-            self.player.reset(self.throughput_traces[self.trace_idx], self.time_traces[self.trace_idx], self.name_traces[self.trace_idx])
+            self.player.reset(self.throughput_traces[self.trace_idx], self.time_traces[self.trace_idx], self.name_traces[self.trace_idx], testing=False)
             self.server.reset()
             self.ending_flag = 0
             self.video_length = 0
@@ -278,7 +304,7 @@ class Live_Streaming(object):
     # 5th reward, display speed
     def get_unnormal_speed_penalty(self, speed, display_duration):
         speed_gap = np.abs(speed - 1.0)
-        if speed_gap > 0.1:
+        if speed_gap >= 0.1:
             return Env_Config.unnormal_playing_penalty * speed_gap * display_duration 
         return 0.0
 

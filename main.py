@@ -107,9 +107,9 @@ def main():
         # save model
         if episode % Config.save_logs_frequency == 0:
             print("episode:", episode)
-            agent.save(episode, Config.logs_path)
-            np.save(os.path.join(Config.logs_path, 'loss.npy'), np.array(loss_logs))
-            np.save(os.path.join(Config.logs_path, 'reward.npy'), np.array(reward_logs))
+            agent.save(episode, logs_path)
+            np.save(os.path.join(logs_path, 'loss.npy'), np.array(loss_logs))
+            np.save(os.path.join(logs_path, 'reward.npy'), np.array(reward_logs))
 
         # print reward and loss
         if episode % Config.show_loss_frequency == 0: 

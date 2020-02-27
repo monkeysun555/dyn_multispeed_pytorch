@@ -36,7 +36,7 @@ class Config(object):
     random_seed = 11
     massive_result_files = './all_results/all_results'
     regular_test_files = './debug/'
-    trace_idx = 2
+    trace_idx = 10
 
 class Env_Config(object):
     # For environment, ms
@@ -51,7 +51,7 @@ class Env_Config(object):
     s_len = 15
     a_num = 2
     a_dims = [6, 7] # 6 bitrates and 7 playing speed
-    video_terminal_length = 200
+    video_terminal_length = 300
     packet_payload_portion = 0.973
     rtt_low = 30.0
     rtt_high = 40.0 
@@ -101,7 +101,7 @@ class Env_Config(object):
     skip_latency = skip_segs * seg_duration + chunk_duration 
 
 class Plot_Config(object):
-    result_dir = './debug/model_0/'
-    figures_dir = './test_figures/model_0/'
-    result_file = './test_figures/model_0/'
+    result_dir = './debug/model_2/'
+    figures_dir = './test_figures/model_2/'
+    result_file = './test_figures/model_2/'
     plt_buffer_a = 1e-5
