@@ -22,7 +22,7 @@ class Config(object):
     else:
         logs_path = './models/logs_m_' + str(model_version) + '/q_' + str(q_version) + '/t_' + str(target_version) + '/l_' + str(loss_version)
     reply_buffer_size = 3000
-    total_episode = 50000
+    total_episode = 70000
     discount_factor = 0.99
     save_logs_frequency = 500
     lr = 1e-3

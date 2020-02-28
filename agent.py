@@ -324,7 +324,7 @@ class Agent:
         if self.model_version == 0:
             estimate = torch.max(self.Q_network.forward(state), 1)[1].data[0]
             if np.random.random() < self.epsilon:
-                return np.random.randint(0, self.action_dims[0]*self.action_dims[1]-1)
+                return np.random.randint(0, self.action_dims[0]*self.action_dims[1])
             else:
                 return estimate
 
@@ -333,7 +333,7 @@ class Agent:
             estimate = [torch.max(q_value, 1)[1].data[0] for q_value in outputs] 
             # with epsilon prob to choose random action else choose argmax Q estimate action
             if np.random.random() < self.epsilon:
-                return [np.random.randint(0, self.action_dims[action_idx]-1) for action_idx in range(len(self.action_dims))]
+                return [np.random.randint(0, self.action_dims[action_idx]) for action_idx in range(len(self.action_dims))]
             else:
                 return estimate
 
@@ -342,7 +342,7 @@ class Agent:
             estimate = [torch.max(q_value, 1)[1].data[0] for q_value in outputs] 
             # with epsilon prob to choose random action else choose argmax Q estimate action
             if np.random.random() < self.epsilon:
-                return [np.random.randint(0, self.action_dims[action_idx]-1) for action_idx in range(len(self.action_dims))]
+                return [np.random.randint(0, self.action_dims[action_idx]) for action_idx in range(len(self.action_dims))]
             else:
                 return estimate
 

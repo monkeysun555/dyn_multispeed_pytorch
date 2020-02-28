@@ -48,9 +48,9 @@ def main():
     # reply_buffer = Reply_Buffer(Config.reply_buffer_size)
     agent = Agent(action_dims, model_v, q_v, target_v, loss_v)
     if model_v == 0 or model_v == 1:
-        model_path = './models/logs_m_' + str(model_v) + '/t_' + str(target_v) + '/l_' + str(loss_v) + '/model-' + str(episode) + '.pth'
+        model_path = './models/logs_m_' + str(model_v) + '/t_' + str(target_v) + '/l_' + str(loss_v) + '/latency_' + str(init_latency) + 's/model-' + str(episode) + '.pth'
     elif model_v == 2:
-        model_path = './models/logs_m_' + str(model_v) + '/q_' + str(q_v) + '/t_' + str(target_v) + '/l_' + str(loss_v) + '/model-' + str(episode) + '.pth'
+        model_path = './models/logs_m_' + str(model_v) + '/q_' + str(q_v) + '/t_' + str(target_v) + '/l_' + str(loss_v) + '/latency_' + str(init_latency) + 's/model-' + str(episode) + '.pth'
     agent.restore(model_path)
 
     # check results log path
