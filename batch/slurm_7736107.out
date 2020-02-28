@@ -1,0 +1,1 @@
+/opt/slurm/data/slurmd/job7736107/slurm_script: line 22: 54877 Segmentation fault      (core dumped) python main.py -l 3

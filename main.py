@@ -84,7 +84,7 @@ def main():
                 state = state_new
 
         # sample batch from reply buffer
-        if episode < Config.observe_episode:
+        if episode < starting_episode + Config.observe_episode:
             continue
 
         # update target network

@@ -14,7 +14,7 @@ class Config(object):
     epsilon_start = 1.0
     epsilon_final = 0.0001
     if model_version == 0:
-        epsilon_decay = 10000.0          # less, focus faster
+        epsilon_decay = 5000.0          # less, focus faster
     else:
         epsilon_decay = 5000.0          # less, focus faster
     if model_version == 0 or model_version == 1:
@@ -67,7 +67,7 @@ class Env_Config(object):
     chunk_in_seg = seg_duration/chunk_duration
     chunk_seg_ratio = chunk_duration/seg_duration
     server_init_lat_low = 1
-    server_init_lat_high = 10
+    server_init_lat_high = 20
     start_up_ssh = 2000.0
     freezing_tol = 3000.0 
     buffer_ub = server_init_lat_high*seg_duration

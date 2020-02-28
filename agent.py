@@ -378,6 +378,15 @@ class Agent:
         logs_path = os.path.join(logs_path, 'model-{}.pth' .format(step))
         self.Q_network.save(logs_path, step=step, optimizers=self.optimizers)
         print('=> Save {}' .format(logs_path)) 
+
+    def train_restore(self, logs_path):
+        model_list =  glob.glob(os.path.join(logs_path, '*.pth'))
+        max_step = max([int(li.split('/')[-1][6:-4]) for li in model_list]) 
+        model_path = os.path.join(logs_path, 'model-{}.pth' .format(max_step))
+        self.Q_network.load(model_path, self.optimizers)
+        self.target_network.load(model_path, self.optimizers)
+        print('=> Restore {}' .format(model_path))
+        return max_step + 1
     
     def restore(self, logs_path):
         if self.loss_version == 0:
