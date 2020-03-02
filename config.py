@@ -14,15 +14,15 @@ class Config(object):
     epsilon_start = 1.0
     epsilon_final = 0.0001
     if model_version == 0:
-        epsilon_decay = 5000.0          # less, focus faster
+        epsilon_decay = 10000.0          # less, focus faster
     else:
-        epsilon_decay = 5000.0          # less, focus faster
+        epsilon_decay = 10000.0          # less, focus faster
     if model_version == 0 or model_version == 1:
         logs_path = './models/logs_m_' + str(model_version) + '/t_' + str(target_version) + '/l_' + str(loss_version)
     else:
         logs_path = './models/logs_m_' + str(model_version) + '/q_' + str(q_version) + '/t_' + str(target_version) + '/l_' + str(loss_version)
     reply_buffer_size = 3000
-    total_episode = 70000
+    total_episode = 100000
     discount_factor = 0.99
     save_logs_frequency = 500
     lr = 1e-3
@@ -33,10 +33,10 @@ class Config(object):
     update_target_frequency = 50
     show_loss_frequency = 500
     maximum_model = 5
-    random_seed = 11
+    random_seed = 33
     massive_result_files = './all_results/all_results'
     regular_test_files = './debug/'
-    trace_idx = 10
+    trace_idx = 20
 
 class Env_Config(object):
     # For environment, ms
@@ -51,7 +51,7 @@ class Env_Config(object):
     s_len = 15
     a_num = 2
     a_dims = [6, 7] # 6 bitrates and 7 playing speed
-    video_terminal_length = 200
+    video_terminal_length = 100
     packet_payload_portion = 0.973
     rtt_low = 30.0
     rtt_high = 40.0 
