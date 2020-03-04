@@ -196,7 +196,8 @@ class Live_Streaming(object):
             state[7, -1] = skip_normal_repeat_flag                          # flag of skip or repeat, 0, 1 or 2
             state[8, -1] = player_state                                     # player state, 0, 1, or 2
             state[9, -1] = transformed_action_2                             # playing speed, 0.75 to 1.25
-
+            state[10, -1] = transformed_action_2                             # playing speed, 0.75 to 1.25
+            
             state = self.normal(state)
             # print(state)
             action_freezing += freezing
@@ -235,6 +236,7 @@ class Live_Streaming(object):
         state[7, -1] = state[7, -1]/2.0
         state[8, -1] = state[8, -1]/2.0
         state[9, -1] = (state[9, -1]-self.speeds[1])/0.5
+        state[10, -1] = np.abs(state[10, -1]-1.0)/0.25
         return state
 
     def get_server_time(self):

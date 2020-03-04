@@ -15,7 +15,7 @@ def parse_args():
     parser.add_argument('-l', '--latency', dest='init_latency', help='initial latency',
                         default=2, type=int, required=False)
     parser.add_argument('-e', '--episode', dest='episode', help='episode of checkpoint',
-                        default=70000, type=int, required=False)
+                        default=100000, type=int, required=False)
     parser.add_argument('-mv', '--model_version', dest='model_version', help='version of model',
                         default=2, type=int, required=False)
     parser.add_argument('-qv', '--q_version', dest='q_version', help='version of q_function',

@@ -11,19 +11,19 @@ class Model(nn.Module):
         if self.model_version == 0:
             self.lstm1 = nn.LSTM(input_size=5, hidden_size=32, num_layers=2, dropout=0.1, batch_first=True, bidirectional=True)
             self.fc1 = nn.Sequential(
-                nn.Linear(in_features=5, out_features=32),
+                nn.Linear(in_features=6, out_features=64),
                 nn.ReLU())
             self.fc2 = nn.Sequential(
-                nn.Linear(in_features=992, out_features=128),
+                nn.Linear(in_features=1024, out_features=128),
                 nn.ReLU())
             self.output = nn.Linear(in_features=128, out_features=action_dims[0]*action_dims[1])
         elif self.model_version == 1 or self.model_version == 2:
             self.lstm1 = nn.LSTM(input_size=5, hidden_size=32, num_layers=2, dropout=0.1, batch_first=True, bidirectional=True)
             self.fc1 = nn.Sequential(
-                nn.Linear(in_features=5, out_features=32),
+                nn.Linear(in_features=6, out_features=64),
                 nn.ReLU())
             self.fc2 = nn.Sequential(
-                nn.Linear(in_features=992, out_features=128),
+                nn.Linear(in_features=1024, out_features=128),
                 nn.ReLU())
             # print(action_dims)
             self.multi_output_1 = nn.Linear(in_features=128, out_features=action_dims[0]) 
