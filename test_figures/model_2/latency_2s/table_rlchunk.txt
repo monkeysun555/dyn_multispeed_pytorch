@@ -1,3 +1,0 @@
-['files', 'throughut', 'rate', 'reward', 'freezing', '#freezing', 'latency', 'switch', 'starting_time', 'speed']
-['50ms_loss1_m7', 4.023, 3769.333, 1.952, 4.722, 17, 3.067, 64, 2452.3795535098184, 14]
-

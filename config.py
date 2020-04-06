@@ -51,7 +51,7 @@ class Env_Config(object):
     s_len = 15
     a_num = 2
     a_dims = [6, 7] # 6 bitrates and 7 playing speed
-    video_terminal_length = 100
+    video_terminal_length = 200
     packet_payload_portion = 0.973
     rtt_low = 30.0
     rtt_high = 40.0 
@@ -66,8 +66,8 @@ class Env_Config(object):
     chunk_duration = 200.0
     chunk_in_seg = seg_duration/chunk_duration
     chunk_seg_ratio = chunk_duration/seg_duration
-    server_init_lat_low = 1
-    server_init_lat_high = 20
+    server_init_lat_low = 2
+    server_init_lat_high = 5
     start_up_ssh = 2000.0
     freezing_tol = 3000.0 
     buffer_ub = server_init_lat_high*seg_duration
@@ -95,7 +95,7 @@ class Env_Config(object):
     const = 6.0
     x_ratio = 1.0 
     speed_smooth_penalty = 2.0
-    unnormal_playing_penalty = 1.0              
+    unnormal_playing_penalty = 2.0              
     skip_seg_penalty = 3.0              
     repeat_seg_penalty = 3.0      
     skip_latency = skip_segs * seg_duration + chunk_duration 

@@ -273,6 +273,7 @@ class Live_Player(object):
     def reset(self, throughput_trace, time_trace, trace_name, testing=False):
         self.playing_time = 0.0
         self.throughput_trace = throughput_trace
+        # self.throughput_trace = self.throughput_trace_amplifyer_mean(throughput_trace)
         self.time_trace = time_trace
         self.trace_name = trace_name
         if testing:

@@ -6,6 +6,7 @@ class Live_Server(object):
     def __init__(self, initial_latency, random_seed=Config.random_seed):
         # np.random.seed(random_seed)
         self.myRandom = Random(random_seed)
+        self.latency_random = Random(random_seed+1)
         self.initial_latency = initial_latency
         self.seg_duration = Env_Config.seg_duration
         self.chunk_duration = Env_Config.chunk_duration
@@ -110,8 +111,16 @@ class Live_Server(object):
 
     def reset(self, testing=False):
         if testing:
-            self.myRandom = Random(Config.random_seed)
-        self.time = (self.myRandom.random() + self.initial_latency)*Env_Config.seg_duration           
+            if random_latency:
+                self.time = (self.latency_random.randint(Env_Config.server_init_lat_low, \
+                            Env_Config.server_init_lat_high)+self.latency_random.random())\
+                            *Env_Config.seg_duration     
+            else:
+                self.time = (self.latency_random.random() + self.initial_latency)*Env_Config.seg_duration           
+        else:
+            # For training latency, it is random for training in this work
+            self.time = (self.myRandom.randint(Env_Config.server_init_lat_low, \
+                    Env_Config.server_init_lat_high)+np.random.random())*Env_Config.seg_duration 
         self.current_seg_idx = -1
         self.current_chunk_idx = 0
         self.chunks = []    # 1 for initial chunk, 0 for following chunks
