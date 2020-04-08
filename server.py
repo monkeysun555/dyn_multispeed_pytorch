@@ -109,7 +109,7 @@ class Live_Server(object):
         self.time = next_available_time
         return time_interval        # in ms
 
-    def reset(self, testing=False):
+    def reset(self, random_latency, testing=False):
         if testing:
             if random_latency:
                 self.time = (self.latency_random.randint(Env_Config.server_init_lat_low, \

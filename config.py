@@ -34,8 +34,12 @@ class Config(object):
     show_loss_frequency = 500
     maximum_model = 5
     random_seed = 11
-    massive_result_files = './all_results/all_results'
+    massive_result_files = './all_results/'
+    a_massive_result_files = './amplified_all_results/'
     regular_test_files = './debug/'
+    a_regular_test_files = './amplified_debug/'
+    cdf_dir = '../compare/compare_results/'
+    a_cdf_dir = '../compare/amplified_compare_results/'
     trace_idx = 10
 
 class Env_Config(object):
@@ -51,10 +55,12 @@ class Env_Config(object):
     s_len = 15
     a_num = 2
     a_dims = [6, 7] # 6 bitrates and 7 playing speed
-    video_terminal_length = 200
+    video_terminal_length = 300
     packet_payload_portion = 0.973
     rtt_low = 30.0
     rtt_high = 40.0 
+    range_low = 40
+    range_high = 50
     chunk_random_ratio_low = 0.95
     chunk_random_ratio_high = 1.05
 

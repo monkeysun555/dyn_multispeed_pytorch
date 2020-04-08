@@ -9,10 +9,10 @@ from server import *
 from utils import load_bandwidth, load_single_trace
 
 class Live_Streaming(object):
-    def __init__(self, initial_latency, testing=False, massive=False, random_seed=Config.random_seed):
+    def __init__(self, initial_latency, testing=False, massive=False, random_latency=False, random_seed=Config.random_seed):
         np.random.seed(random_seed)
         if testing:
-            self.time_traces, self.throughput_traces, self.name_traces = load_bandwidth()
+            self.time_traces, self.throughput_traces, self.name_traces = load_bandwidth(testing=True)
             if massive: 
                 self.trace_idx = -1     # After first reset, it is 0
                 self.a1_batch = []
@@ -42,8 +42,9 @@ class Live_Streaming(object):
         self.state = np.zeros((Env_Config.s_info, Env_Config.s_len))
         self.video_length = 0
         self.ending_flag = 0
+        self.random_latency = random_latency
 
-    def act(self, action_1, action_2, log_file=None):
+    def act(self, action_1, action_2, log_file=None, massive=False):
         # Initial iteration variables
         action_reward = 0.0
         take_action = 1
@@ -80,12 +81,16 @@ class Live_Streaming(object):
                 log_bit_rate = np.log(self.bitrates[action_1] / self.bitrates[0])
                 pre_log_bit_rate = np.log(self.bitrates[self.pre_action_1] / self.bitrates[0])
                 smooth_p = self.get_smooth_penalty(log_bit_rate, pre_log_bit_rate)
+                if massive:
+                    self.c_batch.append(np.abs(self.bitrates[action_1] - self.bitrates[self.pre_action_1]))
                 self.pre_action_1 = action_1
 
                 # 6th reward, display speed fluctuation
                 transformed_action_2 = self.translate_to_speed(action_2)        # Actual speed, e.g. 1.0, 1.25
                 pre_transformed_action_2 = self.translate_to_speed(self.pre_action_2)            
                 speed_smooth_p = self.get_speed_changing_penalty(transformed_action_2, pre_transformed_action_2)
+                if massive:
+                    self.sc_batch.append(np.abs(transformed_action_2 - pre_transformed_action_2))
                 self.pre_action_2 = action_2
 
                 # 7th reward, skip 
@@ -171,18 +176,6 @@ class Live_Streaming(object):
             # Sum of all metrics
             action_reward += quality_r - rebuff_p - smooth_p - delay_p - unnormal_speed_p - speed_smooth_p - missing_p - repeat_p
 
-            # print("<00000000000000000>")
-            # print("action: ", action_1, action_2)
-            # print(action_reward)
-            # print(quality_r)
-            # print(rebuff_p)
-            # print(smooth_p)
-            # print(delay_p)
-            # print(unnormal_speed_p)
-            # print(speed_smooth_p)
-            # print(missing_p)
-            # print(repeat_p)
-            # print("<--->")
             # Update state
             # print(state)
             state = np.roll(state, -1, axis=1)
@@ -204,6 +197,12 @@ class Live_Streaming(object):
             action_wait += server_wait_time
             # Check whether a segment is finished
             if self.server.check_take_action():
+                if massive:
+                    self.a1_batch.append(self.bitrates[action_1])
+                    self.a2_batch.append(transformed_action_2)
+                    self.f_batch.append(action_freezing)
+                    self.l_batch.append(latency)
+                    self.r_batch.append(action_reward)
                 self.state = state
                 self.video_length += 1
                 if self.video_length >= Env_Config.video_terminal_length:
@@ -254,14 +253,16 @@ class Live_Streaming(object):
     def streaming_finish(self):
         return self.ending_flag
 
-    def reset(self, testing=False):
+    def reset(self, testing=False, bw_amplify=False):
         if testing:
             self.state = np.zeros((Env_Config.s_info, Env_Config.s_len))
             self.trace_idx += 1
             if self.trace_idx == len(self.throughput_traces):
                 return 1
-            self.player.reset(self.throughput_traces[self.trace_idx], self.time_traces[self.trace_idx], self.name_traces[self.trace_idx], testing=True)
-            self.server.reset(testing=testing)
+            self.player.reset(self.throughput_traces[self.trace_idx], \
+                            self.time_traces[self.trace_idx], self.name_traces[self.trace_idx], \
+                            testing=True, bw_amplify=bw_amplify)
+            self.server.reset(testing=testing, random_latency=self.random_latency)
             self.ending_flag = 0
             self.video_length = 0
             self.a1_batch = []
@@ -275,12 +276,25 @@ class Live_Streaming(object):
         else:
             self.state = np.zeros((Env_Config.s_info, Env_Config.s_len))
             self.trace_idx = np.random.randint(len(self.throughput_traces))
-            self.player.reset(self.throughput_traces[self.trace_idx], self.time_traces[self.trace_idx], self.name_traces[self.trace_idx], testing=False)
-            self.server.reset()
+            self.player.reset(self.throughput_traces[self.trace_idx], \
+                            self.time_traces[self.trace_idx], self.name_traces[self.trace_idx], \
+                            testing=False, bw_amplify=bw_amplify)
+            self.server.reset(random_latency=self.random_latency)
             self.ending_flag = 0
             self.video_length = 0
             return 0
 
+    def massive_save(self, cooked_name, cdf_path=None):
+        cdf_path.write(cooked_name + '\t')
+        cdf_path.write(str(np.sum(self.r_batch)) + '\t')
+        cdf_path.write(str(np.mean(self.a1_batch)) + '\t')
+        cdf_path.write(str(np.mean(self.a2_batch)) + '\t')
+        cdf_path.write(str(np.sum(self.f_batch)) + '\t')
+        cdf_path.write(str(np.mean(self.c_batch)) + '\t')
+        cdf_path.write(str(np.mean(self.l_batch)) + '\t')
+        cdf_path.write(str(np.mean(self.sc_batch)) + '\t')
+        cdf_path.write('\n')
+        
     def translate_to_speed(self, action_2_index):
         # Translate to real speed
         if action_2_index == 0 or action_2_index == len(self.speeds) - 1:

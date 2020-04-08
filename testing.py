@@ -24,6 +24,10 @@ def parse_args():
                         default=2, type=int, required=False)
     parser.add_argument('-lv', '--loss_version', dest='loss_version', help='version of loss',
                         default=0, type=int, required=False)
+    parser.add_argument('-r', '--random', dest='random_latency', help='use randon latency',
+                        default=False, action='store_true', required=False)
+    parser.add_argument('-a', '--amplify', dest='bw_amplify', help='amplify bandwidth',
+                        default=False, action='store_true')
     # parser.add_argument('-t', '--train', dest='train', help='train policy or not',
     #                     default=True, type=bool)
     args = parser.parse_args()
@@ -42,34 +46,52 @@ def main():
     target_v = args.target_version
     loss_v = args.loss_version
     init_latency = args.init_latency
+    random_latency = args.random_latency
+    bw_amplify = args.bw_amplify
 
-    env = Env.Live_Streaming(init_latency, testing=True, massive=massive)
+    env = Env.Live_Streaming(init_latency, testing=True, massive=massive, random_latency=random_latency)
     _, action_dims = env.get_action_info()
     # reply_buffer = Reply_Buffer(Config.reply_buffer_size)
     agent = Agent(action_dims, model_v, q_v, target_v, loss_v)
     if model_v == 0 or model_v == 1:
         model_path = './models/logs_m_' + str(model_v) + '/t_' + str(target_v) + '/l_' + str(loss_v) + '/latency_' + str(init_latency) + 's/model-' + str(episode) + '.pth'
     elif model_v == 2:
-        model_path = './models/logs_m_' + str(model_v) + '/q_' + str(q_v) + '/t_' + str(target_v) + '/l_' + str(loss_v) + '/latency_' + str(init_latency) + 's/model-' + str(episode) + '.pth'
+        if bw_amplify:
+            model_path = './models/logs_m_' + str(model_v) + '/q_' + str(q_v) + '/t_' + str(target_v) + '/l_' + str(loss_v) + '/latency_Nones_amplified/model-' + str(episode) + '.pth'
+        else:
+            model_path = './models/logs_m_' + str(model_v) + '/q_' + str(q_v) + '/t_' + str(target_v) + '/l_' + str(loss_v) + '/latency_Nones/model-' + str(episode) + '.pth'
     agent.restore(model_path)
 
-    # check results log path
-    if not os.path.exists(Config.massive_result_files + '_m' + str(model_v) + '_q' + str(q_v) + '_t' + str(target_v) + '_l' + str(loss_v) + '/'):
-         os.makedirs(Config.massive_result_files + '_m' + str(model_v) + '_q' + str(q_v) + '_t' + str(target_v) + '_l' + str(loss_v) + '/') 
-    # print(massive, episode, model_v)
-
     if massive:
+        if bw_amplify:
+            compare_path = Config.a_cdf_dir
+            result_path = Config.a_massive_result_files + '/latency_Nones/'
+        else:
+            compare_path = Config.cdf_dir
+            result_path = Config.massive_result_files + 'model_' + str(model_v) + '/latency_Nones/'
+        if not os.path.exists(compare_path):
+            os.makedirs(compare_path)
+        if not os.path.exists(result_path):
+             os.makedirs(result_path) 
+        if random_latency:
+            compare_file = open(compare_path + 'multi_speed_normal.txt' , 'w')
+        else:
+            compare_file = open(compare_path + 'multi_speed_' + str(int(init_latency)) +'s.txt' , 'w')
+               
         while True:
             # Start testing
-            env_end = env.reset(testing=True)
+            env_end = env.reset(testing=True, bw_amplify=bw_amplify)
             if env_end:
                 break
             testing_start_time = env.get_server_time()
             print("Initial latency is: ", testing_start_time)
             tp_trace, time_trace, trace_name, starting_idx = env.get_player_trace_info()
-            log_path = Config.massive_result_files + '_m' + str(model_v) + '_q' + str(q_v) + '_t' + str(target_v) + '_l' + str(loss_v) + '/' + trace_name 
+            print("Trace name is: ", trace_name)
+
+            # print(massive, episode, model_v)
+            log_path = result_path + trace_name 
             log_file = open(log_path, 'w')
-            env.act(0, 3)   # Default
+            env.act(0, 3, massive=massive)   # Default
             state = env.get_state()
             total_reward = 0.0
             while not env.streaming_finish():
@@ -77,7 +99,7 @@ def main():
                     action = agent.testing_take_action(np.array([state]))
                     action_1 = int(action/action_dims[1])
                     action_2 = action%action_dims[1]
-                    reward = env.act(action_1, action_2,log_file)
+                    reward = env.act(action_1, action_2,log_file, massive=massive)
                     # print(reward)
                     state_new = env.get_state()
                     state = state_new
@@ -85,7 +107,7 @@ def main():
                 elif model_v == 1 or model_v == 2:
                     action_1, action_2 = agent.testing_take_action(np.array([state]))
                     # print(action_1, action_2)
-                    reward = env.act(action_1, action_2,log_file)
+                    reward = env.act(action_1, action_2,log_file, massive=massive)
                     state_new = env.get_state()
                     state = state_new
                     total_reward += reward
@@ -101,6 +123,8 @@ def main():
             log_file.write('\n' + str(testing_start_time))
             log_file.write('\n')
             log_file.close()
+            env.massive_save(trace_name, compare_file)
+        compare_file.close()
     else:
         # check results log path
         result_path = Config.regular_test_files + 'model_' + str(model_v) + '/latency_' + str(init_latency) + 's/'

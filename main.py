@@ -15,6 +15,8 @@ def parse_args():
                         default=None, type=int)
     parser.add_argument('-r', '--restore', dest='restore', help='restore model',
                         default=False, action='store_true')
+    parser.add_argument('-a', '--amplify', dest='bw_amplify', help='amplify bandwidth',
+                        default=False, action='store_true')
     args = parser.parse_args()
     return args
 args = parse_args() 
@@ -22,6 +24,8 @@ args = parse_args()
 def main():
     initial_latency = args.init_latency
     restore = args.restore
+    bw_amplify = args.bw_amplify
+    
     # Load env
     env = Env.Live_Streaming(initial_latency)
     _, action_dims = env.get_action_info()
@@ -31,7 +35,10 @@ def main():
     loss_logs = []
 
     logs_path = Config.logs_path + '/'
-    logs_path += 'latency_' + str(initial_latency) + 's/'
+    if bw_amplify:
+        logs_path += 'latency_' + str(initial_latency) + 's_amplified/' 
+    else:
+        logs_path += 'latency_' + str(initial_latency) + 's'
     if not os.path.exists(logs_path):
          os.makedirs(logs_path) 
 
@@ -43,7 +50,7 @@ def main():
     print("Episode starts from: ", starting_episode)
     for episode in range(starting_episode, Config.total_episode+1):
         # reset env
-        env_end = env.reset()
+        env_end = env.reset(bw_amplify=bw_amplify)
         env.act(0, 3)   # Default
         state = env.get_state()
         total_reward = 0.0
