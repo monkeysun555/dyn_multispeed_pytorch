@@ -21,7 +21,7 @@ class Config(object):
         logs_path = './models/logs_m_' + str(model_version) + '/t_' + str(target_version) + '/l_' + str(loss_version)
     else:
         logs_path = './models/logs_m_' + str(model_version) + '/q_' + str(q_version) + '/t_' + str(target_version) + '/l_' + str(loss_version)
-    reply_buffer_size = 3000
+    reply_buffer_size = 2000
     total_episode = 100000
     discount_factor = 0.99
     save_logs_frequency = 500
@@ -29,7 +29,7 @@ class Config(object):
     momentum = 0.9
     # batch_size = 300
     observe_episode = 5
-    sampling_batch_size = 300
+    sampling_batch_size = 200
     update_target_frequency = 50
     show_loss_frequency = 500
     maximum_model = 5

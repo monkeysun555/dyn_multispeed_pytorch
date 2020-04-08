@@ -2,7 +2,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=1
-#SBATCH --time=36:00:00
+#SBATCH --time=72:00:00
 #SBATCH --mem=8GB
 #SBATCH --job-name=ms_%j
 #SBATCH --mail-type=END
@@ -19,4 +19,4 @@ cd $VIRTUALENV
 source ./torch/bin/activate
   
 cd $RUNDIR
-python main.py -l 2 -r
+python main.py 
