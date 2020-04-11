@@ -14,9 +14,9 @@ class Config(object):
     epsilon_start = 1.0
     epsilon_final = 0.0001
     if model_version == 0:
-        epsilon_decay = 20000.0          # less, focus faster
+        epsilon_decay = 30000.0          # less, focus faster
     else:
-        epsilon_decay = 20000.0          # less, focus faster
+        epsilon_decay = 30000.0          # less, focus faster
     if model_version == 0 or model_version == 1:
         logs_path = './models/logs_m_' + str(model_version) + '/t_' + str(target_version) + '/l_' + str(loss_version)
     else:
@@ -55,7 +55,7 @@ class Env_Config(object):
     s_len = 15
     a_num = 2
     a_dims = [6, 7] # 6 bitrates and 7 playing speed
-    video_terminal_length = 300
+    video_terminal_length = 200
     packet_payload_portion = 0.973
     rtt_low = 30.0
     rtt_high = 40.0 
