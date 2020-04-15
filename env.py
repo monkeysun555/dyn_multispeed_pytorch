@@ -22,6 +22,8 @@ class Live_Streaming(object):
                 self.f_batch = []
                 self.r_batch = []
                 self.sc_batch = []
+                self.n_forward = 0
+                self.n_backward = 0
             else:
                 self.trace_idx = Config.trace_idx
         else:
@@ -95,6 +97,8 @@ class Live_Streaming(object):
 
                 # 7th reward, skip 
                 if action_2 == len(self.speeds) - 1:
+                    if massive:
+                        self.n_forward += 1
                     skip_normal_repeat_flag = 2.0
                     if latency > Env_Config.skip_latency:
                         jump_time, server_buffer_head_time = self.server.skip()
@@ -105,6 +109,8 @@ class Live_Streaming(object):
 
                 # 8th reward, repeat
                 elif action_2 == 0:
+                    if massive:
+                        self.n_backward += 1
                     skip_normal_repeat_flag = 0.0
                     self.player.repeat()
                     # 8: QoE metric about repeat penalty
@@ -272,6 +278,8 @@ class Live_Streaming(object):
             self.f_batch = []
             self.r_batch = []
             self.sc_batch = []
+            self.n_forward = 0
+            self.n_backward = 0
             return 0
         else:
             self.state = np.zeros((Env_Config.s_info, Env_Config.s_len))
@@ -293,6 +301,10 @@ class Live_Streaming(object):
         cdf_path.write(str(np.mean(self.c_batch)) + '\t')
         cdf_path.write(str(np.mean(self.l_batch)) + '\t')
         cdf_path.write(str(np.mean(self.sc_batch)) + '\t')
+
+        cdf_path.write(str(np.var(self.a2_batch)) + '\t')
+        cdf_path.write(str(self.n_forward) + '\t')
+        cdf_path.write(str(self.n_backward) + '\t')
         cdf_path.write('\n')
         
     def translate_to_speed(self, action_2_index):

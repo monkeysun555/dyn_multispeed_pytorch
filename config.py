@@ -55,7 +55,7 @@ class Env_Config(object):
     s_len = 15
     a_num = 2
     a_dims = [6, 7] # 6 bitrates and 7 playing speed
-    video_terminal_length = 200
+    video_terminal_length = 300
     packet_payload_portion = 0.973
     rtt_low = 30.0
     rtt_high = 40.0 
