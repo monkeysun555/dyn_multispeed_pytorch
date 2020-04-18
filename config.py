@@ -80,7 +80,7 @@ class Env_Config(object):
     
     default_action_1 = 0
     default_action_2 = 3
-    skip_segs = 3.0
+    skip_segs = 2.0                 # PAY ATTENTION HERE
     repeat_segs = 1.0
 
     # Server info

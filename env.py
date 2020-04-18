@@ -177,8 +177,8 @@ class Live_Streaming(object):
             delay_p = self.get_latency_penalty(latency/Env_Config.ms_in_s, chunk_number)
 
             # 5th reward, display speed
-            unnormal_speed_p = self.get_unnormal_speed_penalty(transformed_action_2, display_duration/Env_Config.ms_in_s)
-            
+            # unnormal_speed_p = self.get_unnormal_speed_penalty(transformed_action_2, display_duration/Env_Config.ms_in_s)
+            unnormal_speed_p = self.get_unnormal_speed_penalty(transformed_action_2, 1.0)
             # Sum of all metrics
             action_reward += quality_r - rebuff_p - smooth_p - delay_p - unnormal_speed_p - speed_smooth_p - missing_p - repeat_p
 
