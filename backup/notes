@@ -1,3 +1,5 @@
-nones_ rate for high bw seems to low. to retrain
+currentlu, "Nones" use the one from backup, the new one does not perform well for high bw
 
-for a_nons. seems good enough
+
+
+"A_nones" also use the model from backup

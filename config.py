@@ -55,7 +55,7 @@ class Env_Config(object):
     s_len = 15
     a_num = 2
     a_dims = [6, 7] # 6 bitrates and 7 playing speed
-    video_terminal_length = 200
+    video_terminal_length = 300
     packet_payload_portion = 0.973
     rtt_low = 30.0
     rtt_high = 40.0 
@@ -81,7 +81,7 @@ class Env_Config(object):
     default_action_1 = 0
     default_action_2 = 3
     skip_segs = 2.0                 # PAY ATTENTION HERE
-    repeat_segs = 1.0
+    repeat_segs = 2.0
 
     # Server info
     bitrate_low_noise = 0.7
