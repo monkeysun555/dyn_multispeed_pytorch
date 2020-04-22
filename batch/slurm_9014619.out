@@ -1,9 +1,0 @@
-player initial finish
-Traceback (most recent call last):
-  File "main.py", line 127, in <module>
-    main()
-  File "main.py", line 48, in main
-    starting_episode = agent.train_restore(logs_path)
-  File "/scratch/ls3817/low_latency_streaming/dyn_multispeed_torch/agent.py", line 384, in train_restore
-    max_step = max([int(li.split('/')[-1][6:-4]) for li in model_list]) 
-ValueError: max() arg is an empty sequence
