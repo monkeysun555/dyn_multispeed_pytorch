@@ -33,7 +33,7 @@ class Config(object):
     update_target_frequency = 50
     show_loss_frequency = 500
     maximum_model = 5
-    random_seed = 11
+    random_seed = 100
     massive_result_files = './all_results/'
     a_massive_result_files = './amplified_all_results/'
     regular_test_files = './debug/'
@@ -55,7 +55,7 @@ class Env_Config(object):
     s_len = 15
     a_num = 2
     a_dims = [6, 7] # 6 bitrates and 7 playing speed
-    video_terminal_length = 200
+    video_terminal_length = 300
     packet_payload_portion = 0.973
     rtt_low = 30.0
     rtt_high = 40.0 
@@ -81,7 +81,7 @@ class Env_Config(object):
     default_action_1 = 0
     default_action_2 = 3
     skip_segs = 2.0                 # PAY ATTENTION HERE
-    repeat_segs = 2.0
+    repeat_segs = 1.0
 
     # Server info
     bitrate_low_noise = 0.7
@@ -95,15 +95,15 @@ class Env_Config(object):
 
     # Reward metrics parameters
     action_reward = 1.0 * chunk_seg_ratio   
-    rebuf_penalty = 6.0                         
+    rebuf_penalty = 10.0                         
     smooth_penalty = 1.0
     long_delay_penalty = 4.0 * chunk_seg_ratio
     const = 6.0
     x_ratio = 1.0 
-    speed_smooth_penalty = 2.0
-    unnormal_playing_penalty = 2.0              
-    skip_seg_penalty = 3.0              
-    repeat_seg_penalty = 3.0      
+    speed_smooth_penalty = 3.0
+    unnormal_playing_penalty = 3.0              
+    skip_seg_penalty = 2.0              
+    repeat_seg_penalty = 2.0      
     skip_latency = skip_segs * seg_duration + chunk_duration 
 
 class Plot_Config(object):
