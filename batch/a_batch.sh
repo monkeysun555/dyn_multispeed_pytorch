@@ -2,7 +2,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=1
-#SBATCH --time=72:00:00
+#SBATCH --time=96:00:00
 #SBATCH --mem=8GB
 #SBATCH --job-name=a_ms
 #SBATCH --mail-type=END
