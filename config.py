@@ -22,7 +22,7 @@ class Config(object):
     else:
         logs_path = './models/logs_m_' + str(model_version) + '/q_' + str(q_version) + '/t_' + str(target_version) + '/l_' + str(loss_version)
     reply_buffer_size = 2000
-    total_episode = 100000
+    total_episode = 80000
     discount_factor = 0.99
     save_logs_frequency = 500
     lr = 1e-3
@@ -93,16 +93,16 @@ class Env_Config(object):
     est_low_noise = 0.98
     est_high_noise = 1.02
 
-    # Reward metrics parameters
+    # Reward metrics parameters             # 1, 6, 1, 4, 6, 1, 2, 2, 3, 3
     action_reward = 1.0 * chunk_seg_ratio   
     rebuf_penalty = 10.0                         
     smooth_penalty = 1.0
     long_delay_penalty = 4.0 * chunk_seg_ratio
     const = 6.0
     x_ratio = 1.0 
-    speed_smooth_penalty = 3.0
-    unnormal_playing_penalty = 3.0              
-    skip_seg_penalty = 2.0              
+    speed_smooth_penalty = 2.0
+    unnormal_playing_penalty = 2.0              
+    skip_seg_penalty = 4.0              
     repeat_seg_penalty = 2.0      
     skip_latency = skip_segs * seg_duration + chunk_duration 
 

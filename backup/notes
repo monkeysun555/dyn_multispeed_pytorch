@@ -1,5 +1,1 @@
-currentlu, "Nones" use the one from backup, the new one does not perform well for high bw
-
-
-
-"A_nones" also use the model from backup
+Multi to retrain, skip control seems good, but rarely use speed control

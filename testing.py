@@ -126,8 +126,10 @@ def main():
             env.massive_save(trace_name, compare_file)
         compare_file.close()
     else:
-        # check results log path
-        result_path = Config.regular_test_files + 'model_' + str(model_v) + '/latency_' + str(init_latency) + 's/'
+        if bw_amplify:
+            result_path = Config.a_regular_test_files + 'model_' + str(model_v) + '/latency_' + str(init_latency) + 's/'
+        else:
+            result_path = Config.regular_test_files + 'model_' + str(model_v) + '/latency_' + str(init_latency) + 's/'
         if not os.path.exists(result_path):
              os.makedirs(result_path) 
         # Start testing
