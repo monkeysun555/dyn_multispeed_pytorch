@@ -33,7 +33,7 @@ class Config(object):
     update_target_frequency = 50
     show_loss_frequency = 500
     maximum_model = 5
-    random_seed = 100
+    random_seed = 11
     massive_result_files = './all_results/'
     a_massive_result_files = './amplified_all_results/'
     regular_test_files = './debug/'
@@ -95,15 +95,15 @@ class Env_Config(object):
 
     # Reward metrics parameters             # 1, 6, 1, 4, 6, 1, 2, 2, 3, 3
     action_reward = 1.0 * chunk_seg_ratio   
-    rebuf_penalty = 10.0                         
+    rebuf_penalty = 6.0                         
     smooth_penalty = 1.0
     long_delay_penalty = 4.0 * chunk_seg_ratio
     const = 6.0
     x_ratio = 1.0 
     speed_smooth_penalty = 2.0
     unnormal_playing_penalty = 2.0              
-    skip_seg_penalty = 4.0              
-    repeat_seg_penalty = 2.0      
+    skip_seg_penalty = 3.0              
+    repeat_seg_penalty = 3.0      
     skip_latency = skip_segs * seg_duration + chunk_duration 
 
 class Plot_Config(object):

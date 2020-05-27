@@ -1,0 +1,3 @@
+['files', 'throughut', 'rate', 'reward', 'freezing', '#freezing', 'latency', 'switch', 'starting_time', 'speed']
+['70+-24ms_loss1_1', 2.437, 2261.0, 1.715, 0.514, 3, 2.035, 90, 3581.1521325045646, 2]
+

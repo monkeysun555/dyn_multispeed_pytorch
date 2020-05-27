@@ -225,7 +225,7 @@ class Live_Streaming(object):
                             str(latency) + '\t' +
                             str(self.player.get_state()) + '\t' +
                             str(int(action_1/len(self.bitrates))) + '\t' +
-                            str(transformed_action_2) + '\t' + 
+                            str(action_2) + '\t' + 
                             str(action_reward) + '\n') 
                     log_file.flush()
                 return action_reward
